@@ -27,8 +27,8 @@ public class Track {
     @Enumerated(EnumType.STRING)
     private List<Mood> moods = new ArrayList<>(); // 여러 개의 분위기 관리
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @ManyToOne
     @JoinColumn(name = "album_id")
