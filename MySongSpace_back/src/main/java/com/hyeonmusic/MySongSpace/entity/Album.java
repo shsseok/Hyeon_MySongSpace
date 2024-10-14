@@ -1,0 +1,26 @@
+package com.hyeonmusic.MySongSpace.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+public class Album {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long albumId;
+
+    private String title;
+    private String coverImage;
+    private LocalDateTime createdAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "album")
+    private List<Track> tracks;
+
+    // Getters and Setters
+}
+
