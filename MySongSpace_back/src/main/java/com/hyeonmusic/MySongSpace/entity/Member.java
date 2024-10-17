@@ -1,14 +1,19 @@
 package com.hyeonmusic.MySongSpace.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@NoArgsConstructor
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId; // userId에서 memberId로 변경
+    private Long memberId;
     private String username;
     private String email;
     private String nickname;
