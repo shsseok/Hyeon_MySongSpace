@@ -22,8 +22,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final TrackRepository trackRepository;
     private final MemberRepository memberRepository;
+
     @Transactional
-    public CommentResponseDTO createComment(Long trackId, CommentRequestDTO commentRequestDTO) {
+    public Comment createComment(Long trackId, CommentRequestDTO commentRequestDTO) {
         // 트랙 조회
         Track track = trackRepository.findById(trackId)
                 .orElseThrow(() -> new IllegalArgumentException("Track not found with id: " + trackId));
@@ -38,35 +39,8 @@ public class CommentService {
             parentComment = commentRepository.findById(commentRequestDTO.getParentId())
                     .orElseThrow(() -> new IllegalArgumentException("Parent comment not found with id: " + commentRequestDTO.getParentId()));
         }
-
-        // 댓글 엔티티 생성
-        Comment comment = new Comment();
-        comment.setContent(commentRequestDTO.getContent());
-        comment.setTrack(track);
-        comment.setMember(member);
-        comment.setParent(parentComment); // 대댓글인 경우 부모 댓글을 설정
-        comment.setCreatedAt(LocalDateTime.now());
-
-        // 부모 댓글일 경우에만 별점을 설정
-        if (parentComment == null) {
-            comment.setRating(commentRequestDTO.getRating());
-        } else {
-            comment.setRating(null); // 대댓글은 별점이 없음
-        }
-
-        // 댓글 저장
+        Comment comment = Comment.createComment(commentRequestDTO, track, member, parentComment);
         Comment savedComment = commentRepository.save(comment);
-
-        // 응답 DTO 생성
-        return new CommentResponseDTO(
-                savedComment.getCommentId(),
-                savedComment.getContent(),
-                savedComment.getTrack().getId(),
-                savedComment.getMember().getUsername(),
-                savedComment.getRating(),
-                savedComment.getCreatedAt(),
-                savedComment.getUpdatedAt(),
-                savedComment.getParent() != null ? savedComment.getParent().getCommentId() : null // 대댓글일 경우 부모 ID 포함
-        );
+        return savedComment;
     }
 }

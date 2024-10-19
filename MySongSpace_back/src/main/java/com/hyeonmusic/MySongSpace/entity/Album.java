@@ -1,10 +1,13 @@
 package com.hyeonmusic.MySongSpace.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Getter
 public class Album {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
