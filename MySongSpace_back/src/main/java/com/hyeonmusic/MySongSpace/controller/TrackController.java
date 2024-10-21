@@ -2,6 +2,8 @@ package com.hyeonmusic.MySongSpace.controller;
 
 import com.hyeonmusic.MySongSpace.dto.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
+import com.hyeonmusic.MySongSpace.entity.Genre;
+import com.hyeonmusic.MySongSpace.entity.Mood;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.service.TrackService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +29,13 @@ public class TrackController {
 
     // 2. 모든 트랙 조회 (GET)
     @GetMapping
-    public ResponseEntity<List<TrackResponseDTO>> getAllTracks() {
-        List<TrackResponseDTO> tracks = trackService.getAllTracks();
+    public ResponseEntity<List<TrackResponseDTO>> getAllTracks(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "sortBy", defaultValue = "latest") String sortBy,
+            @RequestParam(value = "moods", required = false) List<Mood> moods,
+            @RequestParam(value = "genres", required = false) List<Genre> genres) {
+
+        List<TrackResponseDTO> tracks = trackService.getAllTracks(page,sortBy,moods,genres);
         return ResponseEntity.ok(tracks);
     }
 

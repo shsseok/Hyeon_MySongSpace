@@ -31,7 +31,7 @@ public class FileService {
             // 폴더 경로 설정: 음악 파일은 'music/', 이미지 커버는 'covers/' 폴더에 저장
             String folderPath = fileType.equals("music") ? "music/" : "covers/";
             String fullFilePath = folderPath + fileName;
-
+            
             // 파일 메타데이터 설정
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());

@@ -3,15 +3,22 @@ package com.hyeonmusic.MySongSpace.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.hyeonmusic.MySongSpace.dto.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
+import com.hyeonmusic.MySongSpace.entity.Genre;
 import com.hyeonmusic.MySongSpace.entity.Member;
+import com.hyeonmusic.MySongSpace.entity.Mood;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,15 +40,20 @@ public class TrackService {
 
         String filePath = fileService.uploadFile(trackUploadDTO.getTrackFile(), "music");
         String coversPath = fileService.uploadFile(trackUploadDTO.getTrackCover(), "covers");
-        Track track = Track.createTrack(trackUploadDTO,member,filePath,coversPath);
+        Track track = Track.createTrack(trackUploadDTO, member, filePath, coversPath);
 
         return trackRepository.save(track);
     }
 
-    public List<TrackResponseDTO> getAllTracks() {
-
-        return trackRepository.findAll().stream()
+    public List<TrackResponseDTO> getAllTracks(int page, String sortBy, List<Mood> moods, List<Genre> genres) {
+        // 페이지 크기를 10으로 설정
+        Pageable pageable = PageRequest.of(page, 10, Sort.by(getSortDirection(sortBy)).descending());
+        // JPQL 메서드를 호출하여 필터링된 트랙을 조회
+        Page<Track> trackPage = trackRepository.findTracksWithFilters(moods, genres, sortBy, pageable);
+        // Track 엔티티를 TrackResponseDTO로 변환
+        return trackPage.stream()
                 .map(track -> new TrackResponseDTO(
+                        track.getTrackId(),
                         track.getTitle(),
                         track.getDescription(),
                         track.getCoversPath(),
@@ -54,11 +66,16 @@ public class TrackService {
                 .collect(Collectors.toList());
     }
 
+    public String getSortDirection(String sortBy) {
+        return sortBy.equals("popular") ? null : "uploadedAt"; // 최신순과 인기순 모두 DESC로 설정
+    }
+
     public TrackResponseDTO getTrackById(Long id) {
         Track track = trackRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Track not found"));
 
         return new TrackResponseDTO(
+                track.getTrackId(),
                 track.getTitle(),
                 track.getDescription(),
                 track.getCoversPath(),
@@ -69,6 +86,7 @@ public class TrackService {
                 track.getMoods()
         );
     }
+
     @Transactional
     public void deleteTrack(Long id) {
         // ID로 트랙 조회
