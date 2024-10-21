@@ -2,6 +2,7 @@ package com.hyeonmusic.MySongSpace.entity;
 
 import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -48,6 +49,17 @@ public class Track {
     @OneToMany(mappedBy = "track")
     private List<Likes> likes; // 좋아요 목록
 
+    public Track(String title, String description, String filePath, String coversPath, int duration, List<Genre> genres, List<Mood> moods, Member member) {
+        this.title = title;
+        this.description = description;
+        this.filePath = filePath;
+        this.coversPath = coversPath;
+        this.duration = duration;
+        this.genres = genres;
+        this.moods = moods;
+        this.uploadedAt = LocalDateTime.now();
+        this.member = member;
+    }
     // 정적 팩토리 메서드
     public static Track createTrack(TrackUploadDTO trackUploadDTO, Member member, String filePath, String coversPath) {
         Track track = new Track();

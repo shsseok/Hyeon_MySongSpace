@@ -28,6 +28,16 @@ public class Member {
     private List<Album> albums;
 
     // 필요한 경우 getter와 setter 추가
+
+    // 생성자에서 createdAt 초기화
+    public Member(String username, String email, String nickname, String password, String profilePicture) {
+        this.username = username;
+        this.email = email;
+        this.nickname = nickname;
+        this.password = password;
+        this.profilePicture = profilePicture;
+        this.createdAt = LocalDateTime.now(); // 현재 시간으로 생성
+    }
 }
 
 

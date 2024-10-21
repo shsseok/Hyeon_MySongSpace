@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 public class TrackResponseDTO {
+    private Long trackId;
     private String title;
     private String description;
     private String trackCoverPath;
@@ -20,8 +21,9 @@ public class TrackResponseDTO {
     private List<Genre> genres;
     private List<Mood> moods;
 
-    public TrackResponseDTO(String title, String description, String trackCoverPath, String trackFilePath,
+    public TrackResponseDTO(Long trackId, String title, String description, String trackCoverPath, String trackFilePath,
                             int duration, String memberName, List<Genre> genres, List<Mood> moods) {
+        this.trackId = trackId;
         this.title = title;
         this.description = description;
         this.trackCoverPath = trackCoverPath;
