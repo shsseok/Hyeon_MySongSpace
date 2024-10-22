@@ -49,9 +49,14 @@ public class Comment {
         comment.member = member; // 댓글을 작성한 사용자 설정
         comment.parent = parent; // 부모 댓글 설정 (대댓글인 경우)
         comment.createdAt = LocalDateTime.now(); // 생성 시간 설정
-        comment.rating= commentRequestDTO.getRating();
+        comment.rating = commentRequestDTO.getRating();
 
         return comment;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
 }
 

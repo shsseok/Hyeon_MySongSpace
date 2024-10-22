@@ -1,6 +1,5 @@
 package com.hyeonmusic.MySongSpace.service;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.hyeonmusic.MySongSpace.dto.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
 import com.hyeonmusic.MySongSpace.entity.Genre;
@@ -8,10 +7,9 @@ import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Mood;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
-import com.hyeonmusic.MySongSpace.repository.TrackRepository;
+import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
