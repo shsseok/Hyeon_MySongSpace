@@ -1,4 +1,4 @@
-package com.hyeonmusic.MySongSpace.repository;
+package com.hyeonmusic.MySongSpace.repository.Track;
 
 
 import com.hyeonmusic.MySongSpace.entity.Track;

@@ -6,7 +6,7 @@ import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Mood;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
-import com.hyeonmusic.MySongSpace.repository.TrackRepository;
+import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
