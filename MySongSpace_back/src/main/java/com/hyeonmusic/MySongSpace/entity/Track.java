@@ -39,9 +39,9 @@ public class Track {
     @JoinColumn(name = "member_id")
     private Member member; // 업로드한 사용자
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "album_id")
-    private Album album; // 앨범 정보
+    // 앨범과의 관계를 관리하기 위한 리스트
+    @OneToMany(mappedBy = "track" , cascade = CascadeType.ALL)
+    private List<AlbumTrack> albumTracks = new ArrayList<>(); // 중간 엔티티 리스트
 
     @OneToMany(mappedBy = "track")
     private List<Comment> comments; // 댓글 목록
@@ -60,6 +60,7 @@ public class Track {
         this.uploadedAt = LocalDateTime.now();
         this.member = member;
     }
+
     // 정적 팩토리 메서드
     public static Track createTrack(TrackUploadDTO trackUploadDTO, Member member, String filePath, String coversPath) {
         Track track = new Track();

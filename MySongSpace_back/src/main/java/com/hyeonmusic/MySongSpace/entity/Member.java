@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -22,10 +23,10 @@ public class Member {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "member") // mappedBy도 변경
-    private List<Track> tracks;
+    private List<Track> tracks=new ArrayList<>();
 
     @OneToMany(mappedBy = "member") // mappedBy도 변경
-    private List<Album> albums;
+    private List<Album> albums=new ArrayList<>();
 
     // 필요한 경우 getter와 setter 추가
 
