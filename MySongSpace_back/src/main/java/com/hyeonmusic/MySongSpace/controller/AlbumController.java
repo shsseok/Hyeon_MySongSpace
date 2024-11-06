@@ -67,7 +67,7 @@ public class AlbumController {
         albumService.removeTrackFromAlbum(albumId, trackId); // 앨범과 트랙의 연관관계 삭제 서비스 호출
         return ResponseEntity.ok("Track removed from album successfully.");
     }
-
+    //b316b5330e77701412f69cdf7d732340
     //앨범 수정 (제목)
     // --> 앨범 제목 수정
     @PatchMapping("/{albumId}")
