@@ -1,32 +1,26 @@
 package com.hyeonmusic.MySongSpace.auth.entity;
 
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+//JPA Id가 아닌 이거를 import 해야한다
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 
 @Getter
-@NoArgsConstructor
-@Entity
+@AllArgsConstructor
+@RedisHash(value = "jwt", timeToLive = 10)
 public class Token {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long tokenId;
-
-    @Column(unique = true)
-    private String memberKey;
+    private String tokenId;
 
     private String refreshToken;
 
+    @Indexed
     private String accessToken;
-
-    public Token(String memberKey, String refreshToken, String accessToken) {
-        this.memberKey = memberKey;
-        this.refreshToken = refreshToken;
-        this.accessToken = accessToken;
-    }
 
     public Token updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
