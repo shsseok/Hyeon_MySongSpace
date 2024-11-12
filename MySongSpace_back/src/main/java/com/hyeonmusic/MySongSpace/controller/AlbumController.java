@@ -24,7 +24,7 @@ public class AlbumController {
     @PostMapping
     public ResponseEntity<String> createAlbum(@RequestBody AlbumRequestDTO albumRequestDTO) {
         albumService.createAlbum(albumRequestDTO);
-        return ResponseEntity.ok("성공입니다");
+        return ResponseEntity.ok("앨범 생성에 성공하셨습니다.");
     }
 
     //앨범에 트랙 넣기
@@ -45,12 +45,12 @@ public class AlbumController {
 
     // --> 단건 앨범에 들어가 있는 모든 트랙 조회
     @GetMapping("/{albumId}/tracks")
-    public ResponseEntity<Page<TrackResponseDTO>> getTracksByAlbum(
+    public ResponseEntity<List<TrackResponseDTO>> getTracksByAlbum(
             @PathVariable("albumId") Long albumId,
             @RequestParam(defaultValue = "0", value = "page") int page
     ) {
-        Page<TrackResponseDTO> tracks = albumService.getTracksByAlbum(albumId, page);
-        return ResponseEntity.ok(tracks);
+        List<TrackResponseDTO> tracksByAlbum = albumService.getTracksByAlbum(albumId, page);
+        return ResponseEntity.ok(tracksByAlbum);
     }
 
     //앨범 삭제
@@ -67,6 +67,7 @@ public class AlbumController {
         albumService.removeTrackFromAlbum(albumId, trackId); // 앨범과 트랙의 연관관계 삭제 서비스 호출
         return ResponseEntity.ok("Track removed from album successfully.");
     }
+
     //b316b5330e77701412f69cdf7d732340
     //앨범 수정 (제목)
     // --> 앨범 제목 수정

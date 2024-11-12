@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @AllArgsConstructor
-@RedisHash(value = "jwt", timeToLive = 10)
+@RedisHash(value = "jwt", timeToLive = 60 * 60 * 7 )
 public class Token {
 
     @Id

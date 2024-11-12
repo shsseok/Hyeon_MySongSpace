@@ -21,10 +21,10 @@ public class TrackController {
     private final TrackService trackService;
 
     // 1. 트랙 업로드 (POST)
-    @PostMapping // 업로드를 위한 URL 경로
-    public ResponseEntity<Track> uploadTrack(@ModelAttribute TrackUploadDTO trackUploadDTO) {
-        Track createdTrack = trackService.uploadTrack(trackUploadDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTrack);
+    @PostMapping
+    public ResponseEntity<String> uploadTrack(@ModelAttribute TrackUploadDTO trackUploadDTO) {
+        trackService.uploadTrack(trackUploadDTO);
+        return ResponseEntity.ok("트랙 업로드 성공");
     }
 
     // 2. 모든 트랙 조회 (GET)

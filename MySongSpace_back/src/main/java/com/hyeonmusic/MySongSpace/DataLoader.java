@@ -1,10 +1,7 @@
 package com.hyeonmusic.MySongSpace;
 
 
-import com.hyeonmusic.MySongSpace.entity.Genre;
-import com.hyeonmusic.MySongSpace.entity.Member;
-import com.hyeonmusic.MySongSpace.entity.Mood;
-import com.hyeonmusic.MySongSpace.entity.Track;
+import com.hyeonmusic.MySongSpace.entity.*;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
 import jakarta.annotation.PostConstruct;
@@ -24,7 +21,7 @@ public class DataLoader {
     @PostConstruct
     public void init() {
         // Member 객체 생성
-        Member member = new Member("username", "email@example.com", "nickname", "password", "profilePicture");
+        Member member = new Member("username", "email@example.com", "profilePicture.jpg", "memberKey12345123", Role.USER);
         memberRepository.save(member); // Member 저장
 
         // 초기 데이터를 추가

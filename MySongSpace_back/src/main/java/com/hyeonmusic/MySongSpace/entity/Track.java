@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,21 +19,23 @@ public class Track {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trackId; // 트랙 ID
-    private String coversPath;
+    private String coverPath; //이미지 경로
     private String title; // 트랙 제목
     private String description; // 트랙 설명
-    private String filePath; // 트랙 파일 경로
+    private String musicPath; // 트랙 오디오 파일 경로
     private int duration; // 트랙 지속 시간 (초 단위)
     private LocalDateTime uploadedAt; // 업로드 시간
 
     @ElementCollection(targetClass = Genre.class)
     @CollectionTable(name = "track_genres", joinColumns = @JoinColumn(name = "track_id"))
     @Enumerated(EnumType.STRING)
+    @BatchSize(size = 10)
     private List<Genre> genres = new ArrayList<>(); // 여러 개의 장르 관리
 
     @ElementCollection(targetClass = Mood.class)
     @CollectionTable(name = "track_moods", joinColumns = @JoinColumn(name = "track_id"))
     @Enumerated(EnumType.STRING)
+    @BatchSize(size = 10)
     private List<Mood> moods = new ArrayList<>(); // 여러 개의 분위기 관리
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,11 +52,11 @@ public class Track {
     @OneToMany(mappedBy = "track")
     private List<Likes> likes; // 좋아요 목록
 
-    public Track(String title, String description, String filePath, String coversPath, int duration, List<Genre> genres, List<Mood> moods, Member member) {
+    public Track(String title, String description, String musicPath, String coverPath, int duration, List<Genre> genres, List<Mood> moods, Member member) {
         this.title = title;
         this.description = description;
-        this.filePath = filePath;
-        this.coversPath = coversPath;
+        this.musicPath = musicPath;
+        this.coverPath = coverPath;
         this.duration = duration;
         this.genres = genres;
         this.moods = moods;
@@ -61,13 +64,13 @@ public class Track {
         this.member = member;
     }
 
-    // 정적 팩토리 메서드
-    public static Track createTrack(TrackUploadDTO trackUploadDTO, Member member, String filePath, String coversPath) {
+
+    public static Track createTrack(TrackUploadDTO trackUploadDTO, Member member, String filePath, String coverPath) {
         Track track = new Track();
         track.title = trackUploadDTO.getTitle();
         track.description = trackUploadDTO.getDescription();
-        track.filePath = filePath;
-        track.coversPath = coversPath;
+        track.musicPath = filePath;
+        track.coverPath = coverPath;
         track.duration = trackUploadDTO.getDuration();
         track.genres = trackUploadDTO.getGenres();
         track.moods = trackUploadDTO.getMoods();
@@ -76,7 +79,7 @@ public class Track {
         return track;
     }
 
-    // Getters and Setters
+
 }
 
 

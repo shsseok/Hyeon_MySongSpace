@@ -1,9 +1,6 @@
 package com.hyeonmusic.MySongSpace.repository.Track;
 
-import com.hyeonmusic.MySongSpace.entity.Genre;
-import com.hyeonmusic.MySongSpace.entity.Mood;
-import com.hyeonmusic.MySongSpace.entity.QTrack;
-import com.hyeonmusic.MySongSpace.entity.Track;
+import com.hyeonmusic.MySongSpace.entity.*;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepositoryCustom;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -28,27 +25,26 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
     @Override
     public Page<Track> findTracksWithFilters(List<Mood> moods, List<Genre> genres, String sortBy, Pageable pageable) {
         QTrack qTrack = QTrack.track;
+        QMember qMember = QMember.member;
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-
         // moods 필터 적용
         if (moods != null && !moods.isEmpty()) {
             for (Mood mood : moods) {
                 booleanBuilder.and(qTrack.moods.contains(mood)); // AND 조건
             }
         }
-
         // genres 필터 적용
         if (genres != null && !genres.isEmpty()) {
             for (Genre genre : genres) {
                 booleanBuilder.and(qTrack.genres.contains(genre)); // AND 조건
             }
         }
-
         // 쿼리 실행 및 로그 확인
         System.out.println("Generated Query: " + booleanBuilder.toString());
-
         // 트랙 목록 쿼리 실행
         List<Track> content = queryFactory.selectFrom(qTrack)
+                .join(qTrack.member, qMember)
+                .fetchJoin()
                 .where(booleanBuilder)
                 .orderBy(qTrack.uploadedAt.desc())
                 .offset(pageable.getOffset())

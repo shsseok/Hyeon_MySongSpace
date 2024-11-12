@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.MEMBER_NOT_FOUND;
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.NO_ACCESS;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.MEMBER_NOT_FOUND;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.NO_ACCESS;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor

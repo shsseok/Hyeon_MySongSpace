@@ -7,6 +7,8 @@ import com.hyeonmusic.MySongSpace.entity.Album;
 import com.hyeonmusic.MySongSpace.entity.AlbumTrack;
 import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Track;
+import com.hyeonmusic.MySongSpace.exception.*;
+import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
 import com.hyeonmusic.MySongSpace.repository.Album.AlbumRepository;
 import com.hyeonmusic.MySongSpace.repository.Album.AlbumTrackRepository;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
@@ -20,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -28,17 +32,17 @@ public class AlbumService {
 
     private final AlbumTrackRepository albumTrackRepository;
     private final AlbumRepository albumRepository;
-    private final MemberRepository memberRepository; // 사용자를 찾기 위해 필요
+    private final MemberRepository memberRepository;
     private final TrackRepository trackRepository;
 
     @Transactional
     public void createAlbum(AlbumRequestDTO albumRequestDTO) {
         Member member = memberRepository.findById(albumRequestDTO.getMemberId())
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
         boolean albumExists = member.getAlbums().stream().anyMatch(album ->
                 albumRequestDTO.getTitle().equals(album.getTitle()));
         if (albumExists) {
-            throw new RuntimeException("An album with the same title already exists");
+            throw new AlbumNameDuplicateException(ALBUM_NAME_DUPLICATE);
         }
 
         Album album = Album.createAlbum(albumRequestDTO, member);
@@ -48,15 +52,15 @@ public class AlbumService {
     @Transactional
     public void addTrackToAlbum(Long trackId, Long albumId) {
         Album album = albumRepository.findById(albumId)
-                .orElseThrow(() -> new RuntimeException("Album not found"));
+                .orElseThrow(() -> new AlbumNotFoundException(ALBUM_NOT_FOUND));
         Track track = trackRepository.findById(trackId)
-                .orElseThrow(() -> new RuntimeException("Track not found"));
+                .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
         // 앨범의 AlbumTrack 리스트에서 트랙이 이미 있는지 객체 비교로 확인
         boolean exists = album.getAlbumTracks().stream()
                 .anyMatch(albumTrack -> albumTrack.getTrack().equals(track)); // 객체로 비교
 
         if (exists) {
-            throw new RuntimeException("Track is already in the album");
+            throw new AlbumNameDuplicateException(ALBUM_NAME_DUPLICATE);
         }
 
         AlbumTrack albumTrack = AlbumTrack.createAlbumTrack();
@@ -68,7 +72,7 @@ public class AlbumService {
     @Transactional
     public void deleteAlbum(Long albumId) {
         Album album = albumRepository.findById(albumId)
-                .orElseThrow(() -> new RuntimeException("Album not found"));
+                .orElseThrow(() -> new AlbumNotFoundException(ALBUM_NOT_FOUND));
         albumRepository.delete(album);
     }
 
@@ -76,57 +80,52 @@ public class AlbumService {
     public void removeTrackFromAlbum(Long albumId, Long trackId) {
         int deletedCount = albumTrackRepository.deleteByAlbumIdAndTrackId(albumId, trackId);
         if (deletedCount == 0) {
-            throw new RuntimeException("Track not found in the album or album does not exist.");
+            throw new TrackNotFoundInAlbumException(TRACK_NOT_FOUND_IN_ALBUM);
         }
     }
 
     @Transactional
     public void updateComment(Long albumId, String title) {
         Album album = albumRepository.findById(albumId)
-                .orElseThrow(() -> new RuntimeException("Album not found"));
+                .orElseThrow(() -> new AlbumNotFoundException(ALBUM_NOT_FOUND));
         album.updateTitle(title);
     }
 
     public List<AlbumResponseDTO> getAllAlbumsByUser(Long memberId) {
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
-        return member.getAlbums().stream().map(album -> new AlbumResponseDTO(
-                album.getAlbumId(),
-                album.getTitle(),
-                album.getAlbumTracks().size(),
-                album.getCreatedAt()
-        )).collect(Collectors.toList());
+                .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
+        List<Album> albums = albumRepository.findAlbumByMember(member)
+                .orElseThrow(() -> new AlbumNotFoundException(ALBUM_NOT_FOUND));
+        return albums.stream()
+                .map(album -> new AlbumResponseDTO(
+                        album.getAlbumId(),
+                        album.getTitle(),
+                        album.getAlbumTracks().size(),
+                        album.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
     }
 
 
-    public Page<TrackResponseDTO> getTracksByAlbum(Long albumId, int page) {
-        // 1. 페이지 요청 생성 (한 페이지에 10개의 트랙을 가져옴)
+    public List<TrackResponseDTO> getTracksByAlbum(Long albumId, int page) {
         Pageable pageable = PageRequest.of(page, 10);
-
-        // 2. Repository를 통해 앨범 트랙 가져오기
         Page<AlbumTrack> albumTracksPage = albumTrackRepository.findAlbumTracksByAlbumId(pageable, albumId)
-                .orElseThrow(() -> new EntityNotFoundException("Album not found for id: " + albumId));
+                .orElseThrow(() -> new AlbumNotFoundException(ALBUM_NOT_FOUND));
 
-        // 3. AlbumTrack에서 TrackResponseDTO로 변환
-        Page<TrackResponseDTO> trackResponseDTOPage = albumTracksPage.map(albumTrack -> {
-            Track track = albumTrack.getTrack(); // AlbumTrack에서 Track 가져오기
-
-            // Track을 TrackResponseDTO로 변환
+        return albumTracksPage.stream().map(albumTrack -> {
+            Track track = albumTrack.getTrack();
             return new TrackResponseDTO(
                     track.getTrackId(),
                     track.getTitle(),
-                    track.getDescription(), // 추가된 description 필드
-                    track.getCoversPath(), // 커버 경로 가져오기
-                    track.getFilePath(), // 트랙 파일 경로 가져오기
-                    track.getDuration(), // 트랙 길이
-                    albumTrack.getAlbum().getMember().getNickname(), // 앨범 트랙의 멤버 이름 가져오기
-                    track.getGenres(), // Genre 리스트
-                    track.getMoods() // Mood 리스트
+                    track.getDescription(),
+                    track.getCoverPath(),
+                    track.getMusicPath(),
+                    track.getDuration(),
+                    albumTrack.getAlbum().getMember().getNickname(),
+                    track.getGenres(),
+                    track.getMoods()
             );
-        });
-
-        // 4. 변환된 페이지 반환
-        return trackResponseDTOPage;
+        }).collect(Collectors.toList());
     }
 
 

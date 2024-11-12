@@ -1,6 +1,9 @@
-package com.hyeonmusic.MySongSpace.exception;
+package com.hyeonmusic.MySongSpace.exception.utils;
 
 
+import com.hyeonmusic.MySongSpace.exception.utils.CustomException;
+import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
+import com.hyeonmusic.MySongSpace.exception.utils.ErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,8 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.INVALID_REQUEST;
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.RESOURCE_NOT_FOUND;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.INVALID_REQUEST;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.RESOURCE_NOT_FOUND;
 
 @Slf4j
 @RestControllerAdvice

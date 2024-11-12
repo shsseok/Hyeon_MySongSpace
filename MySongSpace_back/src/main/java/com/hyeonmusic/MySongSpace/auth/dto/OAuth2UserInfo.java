@@ -9,7 +9,7 @@ import lombok.Builder;
 
 import java.util.Map;
 
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.ILLEGAL_REGISTRATION_ID;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.ILLEGAL_REGISTRATION_ID;
 
 
 @Builder

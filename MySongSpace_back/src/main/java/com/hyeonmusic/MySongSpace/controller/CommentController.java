@@ -21,11 +21,11 @@ public class CommentController {
 
     // 1. 댓글 작성
     @PostMapping
-    public ResponseEntity<Comment> addComment(
+    public ResponseEntity<String> addComment(
             @PathVariable("trackId") Long trackId,
             @RequestBody CommentRequestDTO commentRequestDTO) {
-        Comment comment = commentService.createComment(trackId, commentRequestDTO);
-        return new ResponseEntity<>(comment, HttpStatus.CREATED);
+        commentService.createComment(trackId, commentRequestDTO);
+        return ResponseEntity.ok("댓글을 작성하였습니다");
     }
 
     // 3. 댓글 조회
