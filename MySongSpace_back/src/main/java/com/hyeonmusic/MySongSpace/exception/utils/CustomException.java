@@ -1,4 +1,4 @@
-package com.hyeonmusic.MySongSpace.exception;
+package com.hyeonmusic.MySongSpace.exception.utils;
 
 import lombok.Getter;
 

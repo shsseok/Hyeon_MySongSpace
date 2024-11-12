@@ -45,10 +45,10 @@ public class Comment {
     public static Comment createComment(CommentRequestDTO commentRequestDTO, Track track, Member member, Comment parent) {
         Comment comment = new Comment();
         comment.content = commentRequestDTO.getContent();
-        comment.track = track; // 댓글이 속한 트랙 설정
-        comment.member = member; // 댓글을 작성한 사용자 설정
-        comment.parent = parent; // 부모 댓글 설정 (대댓글인 경우)
-        comment.createdAt = LocalDateTime.now(); // 생성 시간 설정
+        comment.track = track;
+        comment.member = member;
+        comment.parent = parent;
+        comment.createdAt = LocalDateTime.now();
         comment.rating = commentRequestDTO.getRating();
 
         return comment;

@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.TOKEN_EXPIRED;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.TOKEN_EXPIRED;
 
 @Slf4j
 @RequiredArgsConstructor

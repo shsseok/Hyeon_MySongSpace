@@ -1,11 +1,10 @@
-package com.hyeonmusic.MySongSpace.auth.exception;
+package com.hyeonmusic.MySongSpace.exception;
 
 import com.hyeonmusic.MySongSpace.exception.utils.CustomException;
 import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
 
-public class AuthException extends CustomException {
-
-    public AuthException(ErrorCode errorCode) {
+public class FileNotFoundException extends CustomException {
+    public FileNotFoundException(ErrorCode errorCode) {
         super(errorCode);
     }
 }

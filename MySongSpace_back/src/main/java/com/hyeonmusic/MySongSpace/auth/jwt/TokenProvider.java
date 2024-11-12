@@ -23,8 +23,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.INVALID_JWT_SIGNATURE;
-import static com.hyeonmusic.MySongSpace.exception.ErrorCode.INVALID_TOKEN;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.INVALID_JWT_SIGNATURE;
+import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.INVALID_TOKEN;
 
 @RequiredArgsConstructor
 @Component
@@ -33,11 +33,11 @@ public class TokenProvider {
     @Value("${jwt.key}")
     private String key;
     private SecretKey secretKey;
-//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-//    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
+    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
 
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 10L;  // 30초
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 10L; // 1분
+//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 10L;  // 30초
+//    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 10L; // 1분
     private static final String KEY_ROLE = "role";
     private final TokenService tokenService;
 

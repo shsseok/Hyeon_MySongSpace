@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CommentResponseDTO {
     private Long commentId;
+    private Long parentId;
     private String content;
     private String writer;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -22,15 +23,17 @@ public class CommentResponseDTO {
 
     private List<CommentResponseDTO> children = new ArrayList<>();
 
-    public CommentResponseDTO(Long commentId, String content, String writer, LocalDateTime createDate) {
+    public CommentResponseDTO(Long commentId, String content, String writer, LocalDateTime createDate, Long parentId) {
         this.commentId = commentId;
+        this.parentId = parentId;
         this.content = content;
         this.writer = writer;
         this.createDate = createDate;
     }
 
-    public CommentResponseDTO(Long commentId, String content, String writer, int rating, LocalDateTime createDate) {
+    public CommentResponseDTO(Long commentId, String content, String writer, int rating, LocalDateTime createDate, Long parentId) {
         this.commentId = commentId;
+        this.parentId = parentId;
         this.content = content;
         this.writer = writer;
         this.rating = rating;
@@ -38,16 +41,17 @@ public class CommentResponseDTO {
     }
 
     public static CommentResponseDTO convertCommentToDto(Comment comment) {
-        // 부모가 없는 경우와 있는 경우에 따라 DTO 생성
         return comment.getParent() == null ?
                 new CommentResponseDTO(comment.getCommentId(),
                         comment.getContent(),
-                        comment.getMember().getNickname(),
+                        comment.getMember().getUsername(),
                         comment.getRating(),
-                        comment.getCreatedAt()) :
+                        comment.getCreatedAt(),
+                        null) :
                 new CommentResponseDTO(comment.getCommentId(),
                         comment.getContent(),
-                        comment.getMember().getNickname(),
-                        comment.getCreatedAt());
+                        comment.getMember().getUsername(),
+                        comment.getCreatedAt(),
+                        comment.getParent().getCommentId());
     }
 }

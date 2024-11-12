@@ -1,8 +1,8 @@
 package com.hyeonmusic.MySongSpace.auth.exception;
 
 
-import com.hyeonmusic.MySongSpace.exception.CustomException;
-import com.hyeonmusic.MySongSpace.exception.ErrorCode;
+import com.hyeonmusic.MySongSpace.exception.utils.CustomException;
+import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
 
 public class TokenException extends CustomException {
 
