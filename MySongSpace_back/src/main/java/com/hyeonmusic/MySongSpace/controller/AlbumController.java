@@ -68,7 +68,6 @@ public class AlbumController {
         return ResponseEntity.ok("Track removed from album successfully.");
     }
 
-    //b316b5330e77701412f69cdf7d732340
     //앨범 수정 (제목)
     // --> 앨범 제목 수정
     @PatchMapping("/{albumId}")

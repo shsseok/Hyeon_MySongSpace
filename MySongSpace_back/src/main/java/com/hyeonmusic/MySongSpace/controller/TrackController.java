@@ -46,15 +46,6 @@ public class TrackController {
         return ResponseEntity.ok(track);
     }
 
-    // 4. 트랙 수정 (PUT)
-//    @PutMapping("/{trackId}")
-//    public ResponseEntity<Track> updateTrack(
-//            @PathVariable Long trackId,
-//            @RequestBody Track updatedTrack) {
-//        Track track = trackService.updateTrack(trackId, updatedTrack);
-//        return ResponseEntity.ok(track);
-//    }
-
     // 5. 트랙 삭제 (DELETE)
     @DeleteMapping("/{trackId}")
     public ResponseEntity<Void> deleteTrack(@PathVariable Long trackId) {
