@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mydatabase
+    environment:
+      MYSQL_ROOT_PASSWORD: password123
+      MYSQL_DATABASE: music_database
+    ports:
+      - "3306:3306"
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:alpine
+    container_name: myredis
+    ports:
+      - "6379:6379"
+    networks:
+      - mynetwork
+
+  app:
+    image: simhyeonseok/mysongspace:1.0.1  # 버전 변경
+    container_name: myapp
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/music_database
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_PROFILES_ACTIVE: docker  # Docker 환경에서 "docker" 프로파일 활성화
+    depends_on:
+      - db
+      - redis
+    networks:
+      - mynetwork
+
+
+networks:
+  mynetwork:
+    driver: bridge
