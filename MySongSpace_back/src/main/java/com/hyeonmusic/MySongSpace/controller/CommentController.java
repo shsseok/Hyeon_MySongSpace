@@ -42,14 +42,14 @@ public class CommentController {
             @PathVariable("commentId") Long commentId,
             @RequestBody String content) {
         commentService.updateComment(commentId, content);
-        return new ResponseEntity<>("Comment updated successfully", HttpStatus.OK);
+        return ResponseEntity.ok("댓글을 수정을 성공 하였습니다");
 
     }
 
     //댓글 삭제
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Long commentId) {
+    public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long commentId) {
         commentService.deleteComment(commentId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("댓글을 삭제를 성공 하였습니다");
     }
 }

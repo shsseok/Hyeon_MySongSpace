@@ -24,33 +24,28 @@ public class Track {
     private String description; // 트랙 설명
     private String musicPath; // 트랙 오디오 파일 경로
     private int duration; // 트랙 지속 시간 (초 단위)
+    private int likeCount;
     private LocalDateTime uploadedAt; // 업로드 시간
 
-    @ElementCollection(targetClass = Genre.class)
-    @CollectionTable(name = "track_genres", joinColumns = @JoinColumn(name = "track_id"))
-    @Enumerated(EnumType.STRING)
-    @BatchSize(size = 10)
-    private List<Genre> genres = new ArrayList<>(); // 여러 개의 장르 관리
-
-    @ElementCollection(targetClass = Mood.class)
-    @CollectionTable(name = "track_moods", joinColumns = @JoinColumn(name = "track_id"))
-    @Enumerated(EnumType.STRING)
-    @BatchSize(size = 10)
-    private List<Mood> moods = new ArrayList<>(); // 여러 개의 분위기 관리
+    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
+    private List<TrackGenre> genres = new ArrayList<>();
+    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
+    private List<TrackMood> moods = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member; // 업로드한 사용자
 
     // 앨범과의 관계를 관리하기 위한 리스트
-    @OneToMany(mappedBy = "track" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
     private List<AlbumTrack> albumTracks = new ArrayList<>(); // 중간 엔티티 리스트
 
     @OneToMany(mappedBy = "track")
-    private List<Comment> comments; // 댓글 목록
+    private List<Comment> comments = new ArrayList<>();
+    // 댓글 목록
 
     @OneToMany(mappedBy = "track")
-    private List<Likes> likes; // 좋아요 목록
+    private List<Likes> likes = new ArrayList<>();
 
     public Track(String title, String description, String musicPath, String coverPath, int duration, List<Genre> genres, List<Mood> moods, Member member) {
         this.title = title;
@@ -58,8 +53,8 @@ public class Track {
         this.musicPath = musicPath;
         this.coverPath = coverPath;
         this.duration = duration;
-        this.genres = genres;
-        this.moods = moods;
+        this.genres = TrackGenre.createTrackGenreList(this, genres);
+        this.moods = TrackMood.createTrackMoodList(this, moods);
         this.uploadedAt = LocalDateTime.now();
         this.member = member;
     }
@@ -72,14 +67,22 @@ public class Track {
         track.musicPath = filePath;
         track.coverPath = coverPath;
         track.duration = trackUploadDTO.getDuration();
-        track.genres = trackUploadDTO.getGenres();
-        track.moods = trackUploadDTO.getMoods();
+        track.genres = TrackGenre.createTrackGenreList(track, trackUploadDTO.getGenres());
+        track.moods = TrackMood.createTrackMoodList(track, trackUploadDTO.getMoods());
         track.uploadedAt = LocalDateTime.now();
         track.member = member; // 업로드한 사용자를 설정
         return track;
     }
 
+    //비즈니스 로직
 
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
+    }
 }
 
 

@@ -7,9 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
-//@ComponentScan(excludeFilters = {
-//		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DataLoader.class)
-//})
+@ComponentScan(excludeFilters = {
+		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DataLoader.class)
+})
 public class MySongSpaceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(MySongSpaceApplication.class, args);

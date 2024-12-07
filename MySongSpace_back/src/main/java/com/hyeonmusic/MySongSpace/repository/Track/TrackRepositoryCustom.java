@@ -13,5 +13,6 @@ public interface TrackRepositoryCustom {
     Page<Track> findTracksWithFilters(@Param("moods") List<Mood> moods,
                                       @Param("genres") List<Genre> genres,
                                       @Param("sortBy") String sortBy,
+                                      @Param("keyword") String keyword,
                                       Pageable pageable);
 }
