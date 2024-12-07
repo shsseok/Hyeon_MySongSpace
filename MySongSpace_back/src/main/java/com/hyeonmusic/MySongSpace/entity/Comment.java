@@ -32,11 +32,11 @@ public class Comment {
 
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "track_id")
     private Track track;
 
@@ -49,13 +49,18 @@ public class Comment {
         comment.member = member;
         comment.parent = parent;
         comment.createdAt = LocalDateTime.now();
-        comment.rating = commentRequestDTO.getRating();
-
+        comment.updatedAt = LocalDateTime.now();
+        if (parent == null) {
+            comment.rating = commentRequestDTO.getRating();
+        } else {
+            comment.rating = null;
+        }
         return comment;
     }
 
     public void updateContent(String content) {
         this.content = content;
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

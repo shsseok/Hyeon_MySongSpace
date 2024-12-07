@@ -8,6 +8,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,7 +19,7 @@ import java.util.stream.IntStream;
 public class DataLoader {
     private final TrackRepository trackRepository;
     private final MemberRepository memberRepository;
-
+    private final DataSource dataSource;
     @PostConstruct
     public void init() {
         // Member 객체 생성
@@ -26,20 +28,24 @@ public class DataLoader {
 
         // 초기 데이터를 추가
         List<Track> tracks = generateTracks(member);
-        trackRepository.saveAll(tracks); // 생성한 Track 리스트를 저장
-
+//        trackRepository.saveAll(tracks); // 생성한 Track 리스트를 저장
+        try {
+            saveTracksInBatch(tracks); // 배치로 저장
+        } catch (SQLException e) {
+            throw new RuntimeException("Batch insert failed", e);
+        }
         System.out.println("초기 데이터 로드 완료");
     }
 
     public static List<Track> generateTracks(Member member) {
-        return IntStream.range(0, 100) // 0부터 99까지의 숫자 생성
+        return IntStream.range(0,1000000) // 0부터 99까지의 숫자 생성
                 .mapToObj(i -> createTrack(member, i)) // 각 숫자에 대해 트랙 생성
                 .collect(Collectors.toList()); // 리스트로 수집
     }
 
     private static Track createTrack(Member member, int index) {
-        String title = "Track Title " + index; // 제목 설정
-        String description = "This is a description for track " + index; // 설명 설정
+        String title = generateTitle(index); // 제목 설정
+        String description = generateDescription(index); // 설명 설정
         int duration = (int) (Math.random() * 300); // 랜덤 길이 설정 (0-300초)
         List<Genre> genres = getRandomGenres(); // 랜덤 장르 설정
         List<Mood> moods = getRandomMoods(); // 랜덤 무드 설정
@@ -51,7 +57,123 @@ public class DataLoader {
         return new Track(title, description, filePath, coversPath, duration, genres, moods, member);
     }
 
+    private static String generateTitle(int index) {
+        // 제목에 키워드를 추가하여 검색이 용이하도록
+        String[] keywords = {"Love", "Adventure", "Mystery", "Hope", "Dream"};
+        String keyword = keywords[index % keywords.length];
+        return keyword + " Symphony " + index;
+    }
 
+    private static String generateDescription(int index) {
+        // 설명에 키워드와 컨텍스트를 추가하여 검색 가능성 증가
+        String[] topics = {
+                "A journey through emotions.",
+                "An uplifting melody of hope.",
+                "An adventurous soundscape.",
+                "A mysterious and thrilling harmony.",
+                "A dreamlike tune to inspire."
+        };
+        String topic = topics[index % topics.length];
+        return "Track " + index + ": " + topic + " Perfect for relaxation and exploration.";
+    }
+    private void saveTracksAndRelationsInBatch(List<Track> tracks) throws SQLException {
+        String trackSql = "INSERT INTO track (title, description, music_path, cover_path, duration, member_id, like_count) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String genreSql = "INSERT INTO track_genre (track_id, genre) VALUES (?, ?)";
+        String moodSql = "INSERT INTO track_mood (track_id, mood) VALUES (?, ?)";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement trackStatement = connection.prepareStatement(trackSql, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement genreStatement = connection.prepareStatement(genreSql);
+             PreparedStatement moodStatement = connection.prepareStatement(moodSql)) {
+
+            int batchSize = 1000;
+            int count = 0;
+
+            // 1. Track 저장
+            for (Track track : tracks) {
+                trackStatement.setString(1, track.getTitle());
+                trackStatement.setString(2, track.getDescription());
+                trackStatement.setString(3, track.getMusicPath());
+                trackStatement.setString(4, track.getCoverPath());
+                trackStatement.setInt(5, track.getDuration());
+                trackStatement.setLong(6, track.getMember().getMemberId());
+                trackStatement.setLong(7, 0); // like_count 초기값
+                trackStatement.addBatch();
+
+                if (++count % batchSize == 0) {
+                    trackStatement.executeBatch();
+                }
+            }
+            trackStatement.executeBatch();
+
+            // 2. Track ID 가져오기
+            ResultSet generatedKeys = trackStatement.getGeneratedKeys();
+            Map<Track, Long> trackIdMap = new HashMap<>();
+            for (Track track : tracks) {
+                if (generatedKeys.next()) {
+                    trackIdMap.put(track, generatedKeys.getLong(1));
+                }
+            }
+
+            // 3. TrackGenre 저장
+            count = 0;
+            for (Track track : tracks) {
+                Long trackId = trackIdMap.get(track);
+                for (TrackGenre trackGenre : track.getGenres()) {
+                    genreStatement.setLong(1, trackId);
+                    genreStatement.setString(2, trackGenre.getGenre().toString());
+                    genreStatement.addBatch();
+
+                    if (++count % batchSize == 0) {
+                        genreStatement.executeBatch();
+                    }
+                }
+            }
+            genreStatement.executeBatch();
+
+            // 4. TrackMood 저장
+            count = 0;
+            for (Track track : tracks) {
+                System.out.println("출발");
+                Long trackId = trackIdMap.get(track);
+                for (TrackMood trackMood : track.getMoods()) {
+                    moodStatement.setLong(1, trackId);
+                    moodStatement.setString(2, trackMood.getMood().toString());
+                    moodStatement.addBatch();
+
+                    if (++count % batchSize == 0) {
+                        moodStatement.executeBatch();
+                    }
+                }
+            }
+            moodStatement.executeBatch();
+        }
+    }
+    private void saveTracksInBatch(List<Track> tracks) throws SQLException {
+        String sql = "INSERT INTO track (title, description, music_path, cover_path, duration, member_id, like_count) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            int batchSize = 1000;
+            int count = 0;
+
+            for (Track track : tracks) {
+                statement.setString(1, track.getTitle());
+                statement.setString(2, track.getDescription());
+                statement.setString(3, track.getMusicPath());
+                statement.setString(4, track.getCoverPath());
+                statement.setInt(5, track.getDuration());
+                statement.setLong(6, track.getMember().getMemberId());
+                statement.setLong(7, 0);
+                statement.addBatch(); // 배치 추가
+
+                if (++count % batchSize == 0) {
+                    statement.executeBatch(); // 배치 실행
+                }
+            }
+            statement.executeBatch(); // 남은 데이터 실행
+        }
+    }
     // 랜덤 장르를 선택하는 메서드
     private static List<Genre> getRandomGenres() {
         Random random = new Random();

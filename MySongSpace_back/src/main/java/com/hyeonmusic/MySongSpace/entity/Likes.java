@@ -4,24 +4,29 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Entity
-@Getter
 @NoArgsConstructor
+@Getter
 public class Likes {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long likeId;
 
-    @ManyToOne // 멤버와의 관계 설정
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "track_id")
+    private Track track;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne // 트랙과의 관계 설정
-    @JoinColumn(name = "track_id")
-    private Track track;
+    public static Likes createLikes(Track track, Member member) {
+        Likes likes = new Likes();
+        likes.member = member;
+        likes.track = track;
+        return likes;
 
-    // Getters and Setters
+    }
+
+
 }
-
-

@@ -114,17 +114,7 @@ public class AlbumService {
 
         return albumTracksPage.stream().map(albumTrack -> {
             Track track = albumTrack.getTrack();
-            return new TrackResponseDTO(
-                    track.getTrackId(),
-                    track.getTitle(),
-                    track.getDescription(),
-                    track.getCoverPath(),
-                    track.getMusicPath(),
-                    track.getDuration(),
-                    albumTrack.getAlbum().getMember().getNickname(),
-                    track.getGenres(),
-                    track.getMoods()
-            );
+            return TrackResponseDTO.toResponse(track);
         }).collect(Collectors.toList());
     }
 

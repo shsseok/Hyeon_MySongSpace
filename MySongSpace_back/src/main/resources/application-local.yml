@@ -4,17 +4,19 @@ spring:
       host: localhost
       port: 6379
   datasource:
-    url: jdbc:mysql://localhost:3306/music_database
+    url: jdbc:mysql://localhost:3306/music_database?rewriteBatchedStatements=true&profileSQL=true&logger=Slf4JLogger&maxQuerySizeToLog=999999
     username: root
     password: gustjr9931
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     properties:
       hibernate:
         show_sql: true
         format_sql: true
+        dialect:
+    database-platform: org.hibernate.dialect.MySQLDialect
   servlet:
     multipart:
       max-file-size: 10MB
@@ -55,7 +57,17 @@ cloud:
 
 logging:
   level:
-    org.hibernate.sql: debug
+    org:
+      hibernate:
+        sql: debug
+        transaction: debug
+        type:
+          descriptor:
+            sql: trace
+      springframework:
+        orm:
+          jpa: DEBUG
+        transaction: DEBUG
     org.springframework.security: DEBUG
 jwt:
   key: "d4e5f6a7b8c9d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6"

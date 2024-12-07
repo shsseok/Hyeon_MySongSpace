@@ -41,34 +41,10 @@ public class CommentService {
 
         Member member = memberRepository.findById(commentRequestDTO.getMemberId())
                 .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
-
-        // 부모 댓글이 있으면 조회 (대댓글의 경우)
-        Comment parentComment = null;
-        if (commentRequestDTO.getParentId() != null) {
-            parentComment = commentRepository.findById(commentRequestDTO.getParentId())
-                    .orElseThrow(() -> new CommentNotFoundException(PARENT_COMMENT_NOT_FOUND));
-        }
+        Comment parentComment = getParentComment(commentRequestDTO.getParentId());
         Comment comment = Comment.createComment(commentRequestDTO, track, member, parentComment);
         commentRepository.save(comment);
 
-    }
-
-    public List<CommentResponseDTO> getComments(Long trackId) {
-        Track track = trackRepository.findById(trackId)
-                .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
-        List<Comment> comments = track.getComments();
-        List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
-        Map<Long, CommentResponseDTO> commentResponseDTOMap = new HashMap<>();
-        comments.forEach(comment -> {
-            CommentResponseDTO commentResponseDTO = CommentResponseDTO.convertCommentToDto(comment);
-            commentResponseDTOMap.put(comment.getCommentId(), commentResponseDTO);
-            if (comment.getParent() == null) {
-                commentResponseDTOList.add(commentResponseDTO);
-            } else {
-                commentResponseDTOMap.get(comment.getParent().getCommentId()).getChildren().add(commentResponseDTO);
-            }
-        });
-        return commentResponseDTOList;
     }
 
     @Transactional
@@ -84,5 +60,29 @@ public class CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND));
         commentRepository.delete(comment);
     }
+    public List<CommentResponseDTO> getComments(Long trackId) {
+        Track track = trackRepository.findById(trackId)
+                .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
+        List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
+        Map<Long, CommentResponseDTO> commentResponseDTOMap = new HashMap<>();
+        track.getComments().forEach(comment -> {
+            CommentResponseDTO commentResponseDTO = CommentResponseDTO.convertCommentToDto(comment);
+            commentResponseDTOMap.put(comment.getCommentId(), commentResponseDTO);
+            if (comment.getParent() == null) {
+                commentResponseDTOList.add(commentResponseDTO);
+            } else {
+                commentResponseDTOMap.get(comment.getParent().getCommentId()).getChildren().add(commentResponseDTO);
+            }
+        });
+        return commentResponseDTOList;
+    }
 
+    //부모 댓글 가져오는 메소드
+    private Comment getParentComment(Long parentId) {
+        if (parentId != null) {
+            return commentRepository.findById(parentId)
+                    .orElseThrow(() -> new CommentNotFoundException(PARENT_COMMENT_NOT_FOUND));
+        }
+        return null;
+    }
 }

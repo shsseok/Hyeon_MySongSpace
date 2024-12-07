@@ -1,12 +1,12 @@
 package com.hyeonmusic.MySongSpace.dto;
 
-import com.hyeonmusic.MySongSpace.entity.Genre;
-import com.hyeonmusic.MySongSpace.entity.Mood;
+import com.hyeonmusic.MySongSpace.entity.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -21,6 +21,7 @@ public class TrackResponseDTO {
     private List<Genre> genres;
     private List<Mood> moods;
 
+    // 생성자
     public TrackResponseDTO(Long trackId, String title, String description, String trackCoverPath, String trackFilePath,
                             int duration, String memberName, List<Genre> genres, List<Mood> moods) {
         this.trackId = trackId;
@@ -32,6 +33,36 @@ public class TrackResponseDTO {
         this.memberName = memberName;
         this.genres = genres;
         this.moods = moods;
+    }
+
+    public static TrackResponseDTO toResponse(Track track) {
+        List<Genre> genreList = extractGenres(track);
+        List<Mood> moodList = extractMoods(track);
+
+        return new TrackResponseDTO(
+                track.getTrackId(),
+                track.getTitle(),
+                track.getDescription(),
+                track.getCoverPath(),
+                track.getMusicPath(),
+                track.getDuration(),
+                track.getMember().getUsername(),
+                genreList,
+                moodList
+        );
+    }
+
+
+    private static List<Genre> extractGenres(Track track) {
+        return track.getGenres().stream()
+                .map(TrackGenre::getGenre)
+                .collect(Collectors.toList());
+    }
+
+    private static List<Mood> extractMoods(Track track) {
+        return track.getMoods().stream()
+                .map(TrackMood::getMood)
+                .collect(Collectors.toList());
     }
 
 }

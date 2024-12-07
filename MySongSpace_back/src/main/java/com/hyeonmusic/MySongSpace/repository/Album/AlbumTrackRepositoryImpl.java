@@ -34,20 +34,19 @@ public class AlbumTrackRepositoryImpl implements AlbumTrackRepositoryCustom {
                 .join(album.member, member).fetchJoin()
                 .join(albumTrack.track, track).fetchJoin()
                 .where(albumTrack.album.albumId.eq(albumId))
-                .offset(pageable.getOffset())  // 페이징 처리를 위해 offset 설정
-                .limit(pageable.getPageSize()) // 한 번에 가져올 데이터 수 설정
-                .fetch(); // 결과 리스트로 가져오기
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
 
-        // 총 레코드 수 계산 (페이징 처리를 위해 필요)
+
         long total = queryFactory
                 .selectFrom(albumTrack)
                 .where(albumTrack.album.albumId.eq(albumId))
                 .fetchCount();
 
-        // PageImpl을 사용하여 Page 객체로 변환
         Page<AlbumTrack> page = new PageImpl<>(albumTracks, pageable, total);
 
-        // Optional로 반환
+
         return Optional.of(page);
     }
 

@@ -60,4 +60,8 @@ public record PrincipalDetails(
     public boolean isEnabled() {
         return true;
     }
+
+    public Long getId() {
+        return member.getMemberId();
+    }
 }

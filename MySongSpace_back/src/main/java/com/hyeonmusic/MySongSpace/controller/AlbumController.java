@@ -32,7 +32,7 @@ public class AlbumController {
     public ResponseEntity<String> addTrackToAlbum(@PathVariable("trackId") Long trackId,
                                                   @PathVariable("albumId") Long albumId) {
         albumService.addTrackToAlbum(trackId, albumId);
-        return ResponseEntity.ok("Track added to album successfully");
+        return ResponseEntity.ok("앨범에 트랙이 성공적으로 추가 되었습니다.");
     }
 
     //앨범 조회
@@ -58,14 +58,14 @@ public class AlbumController {
     @DeleteMapping("/{albumId}")
     public ResponseEntity<String> deleteAlbum(@PathVariable("albumId") Long albumId) {
         albumService.deleteAlbum(albumId);
-        return ResponseEntity.ok("Album deleted successfully.");
+        return ResponseEntity.ok("앨범 삭제가 성공적으로 완료 되었습니다.");
     }
 
     // --> 앨범에 들어가 있는 트랙 삭제
     @DeleteMapping("/{albumId}/tracks/{trackId}")
     public ResponseEntity<String> removeTrackFromAlbum(@PathVariable("albumId") Long albumId, @PathVariable("trackId") Long trackId) {
-        albumService.removeTrackFromAlbum(albumId, trackId); // 앨범과 트랙의 연관관계 삭제 서비스 호출
-        return ResponseEntity.ok("Track removed from album successfully.");
+        albumService.removeTrackFromAlbum(albumId, trackId);
+        return ResponseEntity.ok("앨범트랙이 삭제가 되었습니다.");
     }
 
     //앨범 수정 (제목)
@@ -75,7 +75,7 @@ public class AlbumController {
             @PathVariable("albumId") Long albumId,
             @RequestBody String title) {
         albumService.updateComment(albumId, title);
-        return new ResponseEntity<>("Album updated successfully", HttpStatus.OK);
+        return ResponseEntity.ok("앨범 제목이 수정되었습니다.");
 
     }
 

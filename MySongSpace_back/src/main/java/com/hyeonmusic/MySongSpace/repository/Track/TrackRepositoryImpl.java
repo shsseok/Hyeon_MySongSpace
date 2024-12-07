@@ -1,11 +1,13 @@
 package com.hyeonmusic.MySongSpace.repository.Track;
 
 import com.hyeonmusic.MySongSpace.entity.*;
-import com.hyeonmusic.MySongSpace.repository.Track.TrackRepositoryCustom;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
@@ -14,39 +16,34 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+@Slf4j
 public class TrackRepositoryImpl implements TrackRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final QTrack qTrack = QTrack.track;
+    private final QMember qMember = QMember.member;
+    private final QTrackMood qTrackMood = QTrackMood.trackMood;
+    private final QTrackGenre qTrackGenre = QTrackGenre.trackGenre;
 
     public TrackRepositoryImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
     @Override
-    public Page<Track> findTracksWithFilters(List<Mood> moods, List<Genre> genres, String sortBy, Pageable pageable) {
-        QTrack qTrack = QTrack.track;
-        QMember qMember = QMember.member;
+    public Page<Track> findTracksWithFilters(List<Mood> moods, List<Genre> genres, String sortBy, String keyword, Pageable pageable) {
+
         BooleanBuilder booleanBuilder = new BooleanBuilder();
-        // moods 필터 적용
-        if (moods != null && !moods.isEmpty()) {
-            for (Mood mood : moods) {
-                booleanBuilder.and(qTrack.moods.contains(mood)); // AND 조건
-            }
-        }
-        // genres 필터 적용
-        if (genres != null && !genres.isEmpty()) {
-            for (Genre genre : genres) {
-                booleanBuilder.and(qTrack.genres.contains(genre)); // AND 조건
-            }
-        }
-        // 쿼리 실행 및 로그 확인
-        System.out.println("Generated Query: " + booleanBuilder.toString());
+
+        addMoodsFilter(booleanBuilder, moods);
+        addGenresFilter(booleanBuilder, genres);
+        addKeywordFilter(booleanBuilder, keyword);
         // 트랙 목록 쿼리 실행
         List<Track> content = queryFactory.selectFrom(qTrack)
-                .join(qTrack.member, qMember)
-                .fetchJoin()
+                .join(qTrack.member, qMember).fetchJoin()
+                .leftJoin(qTrack.genres, qTrackGenre).fetchJoin()
+                .leftJoin(qTrack.moods, qTrackMood)
                 .where(booleanBuilder)
-                .orderBy(qTrack.uploadedAt.desc())
+                .orderBy(orderMethod(sortBy))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -58,4 +55,37 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
 
         return PageableExecutionUtils.getPage(content, pageable, () -> countQuery.fetchOne());
     }
+
+    private OrderSpecifier<?> orderMethod(String sortBy) {
+        if (sortBy.equals("popular")) {
+            return qTrack.likeCount.desc();
+        }
+        return qTrack.uploadedAt.desc();
+    }
+
+    private BooleanBuilder addMoodsFilter(BooleanBuilder booleanBuilder, List<Mood> moods) {
+        if (moods != null && !moods.isEmpty()) {
+            moods.forEach(mood -> booleanBuilder.and(qTrackMood.mood.eq(mood)));
+        }
+        return booleanBuilder;
+    }
+
+    private BooleanBuilder addGenresFilter(BooleanBuilder booleanBuilder, List<Genre> genres) {
+        if (genres != null && !genres.isEmpty()) {
+            genres.forEach(genre -> booleanBuilder.and(qTrackGenre.genre.eq(genre)));
+        }
+        return booleanBuilder;
+    }
+
+    private BooleanBuilder addKeywordFilter(BooleanBuilder booleanBuilder, String keyword) {
+        if (keyword != null) {
+            booleanBuilder.and(
+                   qTrack.title.like('%'+keyword+'%')
+                           .or(qTrack.description.like('%'+keyword+'%'))
+            );
+        }
+        return booleanBuilder;
+    }
+
+
 }

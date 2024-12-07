@@ -33,9 +33,10 @@ public class TrackController {
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "sortBy", defaultValue = "latest") String sortBy,
             @RequestParam(value = "moods", required = false) List<Mood> moods,
-            @RequestParam(value = "genres", required = false) List<Genre> genres) {
+            @RequestParam(value = "genres", required = false) List<Genre> genres,
+            @RequestParam(value = "search", required = false) String keyword) {
 
-        List<TrackResponseDTO> tracks = trackService.getAllTracks(page,sortBy,moods,genres);
+        List<TrackResponseDTO> tracks = trackService.getAllTracks(page,sortBy,moods,genres,keyword);
         return ResponseEntity.ok(tracks);
     }
 
@@ -46,10 +47,12 @@ public class TrackController {
         return ResponseEntity.ok(track);
     }
 
+
+
     // 5. 트랙 삭제 (DELETE)
     @DeleteMapping("/{trackId}")
-    public ResponseEntity<Void> deleteTrack(@PathVariable Long trackId) {
+    public ResponseEntity<String> deleteTrack(@PathVariable Long trackId) {
         trackService.deleteTrack(trackId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("트랙 삭제 성공");
     }
 }
