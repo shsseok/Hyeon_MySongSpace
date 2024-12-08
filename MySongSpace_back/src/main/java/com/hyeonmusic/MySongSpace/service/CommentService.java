@@ -13,6 +13,9 @@ import com.hyeonmusic.MySongSpace.repository.Comment.CommentRepository;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,18 +63,24 @@ public class CommentService {
                 .orElseThrow(() -> new CommentNotFoundException(COMMENT_NOT_FOUND));
         commentRepository.delete(comment);
     }
-    public List<CommentResponseDTO> getComments(Long trackId) {
+
+    public List<CommentResponseDTO> getComments(Long trackId, int page) {
         Track track = trackRepository.findById(trackId)
                 .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
+        Pageable pageable = PageRequest.of(page, 10);
+        //부모 댓글 10개 가지오기 최상위 댓글
+        Page<Comment> parentComments = commentRepository.findParentCommentByTrack(pageable, track);
         List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
-        Map<Long, CommentResponseDTO> commentResponseDTOMap = new HashMap<>();
-        track.getComments().forEach(comment -> {
-            CommentResponseDTO commentResponseDTO = CommentResponseDTO.convertCommentToDto(comment);
-            commentResponseDTOMap.put(comment.getCommentId(), commentResponseDTO);
-            if (comment.getParent() == null) {
-                commentResponseDTOList.add(commentResponseDTO);
-            } else {
-                commentResponseDTOMap.get(comment.getParent().getCommentId()).getChildren().add(commentResponseDTO);
+        parentComments.forEach(parentComment -> {
+            //최상위 댓글을 리스트에 담아준다.
+            commentResponseDTOList.add(CommentResponseDTO.convertCommentToDto(parentComment));
+            if (!parentComment.getChildren().isEmpty()) {
+                List<Comment> childrenComment = parentComment.getChildren();
+                int size = childrenComment.size();
+                for (int i = 0; i < size; i++) {
+                    commentResponseDTOList.get(commentResponseDTOList.size() - 1)
+                            .getChildren().add(CommentResponseDTO.convertCommentToDto(childrenComment.get(i)));
+                }
             }
         });
         return commentResponseDTOList;
