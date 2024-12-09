@@ -20,10 +20,7 @@ import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
 
@@ -68,22 +65,34 @@ public class CommentService {
         Track track = trackRepository.findById(trackId)
                 .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
         Pageable pageable = PageRequest.of(page, 10);
-        //부모 댓글 10개 가지오기 최상위 댓글
+
+        // 부모 댓글 10개 가져오기
         Page<Comment> parentComments = commentRepository.findParentCommentByTrack(pageable, track);
         List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
+
+        // 부모 댓글에 대해 처리
         parentComments.forEach(parentComment -> {
-            //최상위 댓글을 리스트에 담아준다.
-            commentResponseDTOList.add(CommentResponseDTO.convertCommentToDto(parentComment));
+            CommentResponseDTO parentDto = CommentResponseDTO.convertCommentToDto(parentComment);
+            commentResponseDTOList.add(parentDto);
+
+            // 부모 댓글이 자식 댓글을 가지고 있다면, 자식 댓글을 재귀적으로 추가
             if (!parentComment.getChildren().isEmpty()) {
-                List<Comment> childrenComment = parentComment.getChildren();
-                int size = childrenComment.size();
-                for (int i = 0; i < size; i++) {
-                    commentResponseDTOList.get(commentResponseDTOList.size() - 1)
-                            .getChildren().add(CommentResponseDTO.convertCommentToDto(childrenComment.get(i)));
-                }
+                addRepliesToParentComment(parentComment, parentDto);
             }
         });
+
         return commentResponseDTOList;
+    }
+
+    private void addRepliesToParentComment(Comment parentComment, CommentResponseDTO parentDto) {
+        // 자식 댓글을 재귀적으로 추가
+        for (Comment child : parentComment.getChildren()) {
+            CommentResponseDTO childDto = CommentResponseDTO.convertCommentToDto(child);
+            parentDto.getChildren().add(childDto); // 부모 DTO에 자식 댓글 추가
+            if (!child.getChildren().isEmpty()) {
+                addRepliesToParentComment(child, childDto); // 자식 댓글이 또 자식 댓글을 가지고 있다면 재귀 호출
+            }
+        }
     }
 
     //부모 댓글 가져오는 메소드
