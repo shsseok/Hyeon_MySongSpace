@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
 
@@ -86,7 +87,10 @@ public class CommentService {
 
     private void addRepliesToParentComment(Comment parentComment, CommentResponseDTO parentDto) {
         // 자식 댓글을 재귀적으로 추가
-        for (Comment child : parentComment.getChildren()) {
+        List<Comment> sortedChildren = parentComment.getChildren().stream()
+                .sorted(Comparator.comparing(Comment::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+        for (Comment child : sortedChildren) {
             CommentResponseDTO childDto = CommentResponseDTO.convertCommentToDto(child);
             parentDto.getChildren().add(childDto); // 부모 DTO에 자식 댓글 추가
             if (!child.getChildren().isEmpty()) {
