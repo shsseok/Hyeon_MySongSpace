@@ -13,7 +13,6 @@ import com.hyeonmusic.MySongSpace.repository.Comment.CommentRepository;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,6 @@ import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
 public class CommentService {
 
@@ -71,37 +69,28 @@ public class CommentService {
 
         // 부모 댓글 10개 가져오기
         Page<Comment> parentComments = commentRepository.findParentCommentByTrack(pageable, track);
-
-        List<Long> parentIds = parentComments.stream()
-                .map(Comment::getCommentId)
-                .collect(Collectors.toList());
-        List<Comment> allChildCommentsByParentIds = commentRepository.findAllChildCommentsByParentIds(parentIds);
-
-        Map<Long, List<Comment>> childCommentMap = allChildCommentsByParentIds.stream()
-                .collect(Collectors.groupingBy(comment -> comment.getParent().getCommentId()));
-
         List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
+        HashMap<Long, CommentResponseDTO> childMap = new HashMap<>();
         parentComments.forEach(parentComment -> {
-            CommentResponseDTO parentDto = CommentResponseDTO.convertCommentToDto(parentComment);
-            commentResponseDTOList.add(parentDto);
-            add(childCommentMap.get(parentComment.getCommentId()),parentDto);
+            CommentResponseDTO parentCommentResponseDTO = CommentResponseDTO.convertCommentToDto(parentComment);
+            commentResponseDTOList.add(parentCommentResponseDTO);
+            childMap.put(parentComment.getCommentId(), parentCommentResponseDTO);
         });
+        List<Comment> childComments = commentRepository.findChildCommentByTrack(track);
+        childComments.forEach(childComment -> {
+            CommentResponseDTO parentDto = childMap.get(childComment.getParent().getCommentId());
+            if (parentDto != null) {
+                CommentResponseDTO childDto = CommentResponseDTO.convertCommentToDto(childComment);
+                parentDto.getChildren().add(childDto);
+                childMap.put(childComment.getCommentId(), childDto);
+            }
+
+        });
+
+
         return commentResponseDTOList;
     }
 
-    private void add(List<Comment> childComments, CommentResponseDTO parentDto) {
-        if(childComments == null)
-        {
-            return;
-        }
-        for (Comment child : childComments) {
-            CommentResponseDTO childDto = CommentResponseDTO.convertCommentToDto(child);
-            parentDto.getChildren().add(childDto);
-            if (!child.getChildren().isEmpty()) {
-                add(child.getChildren(), childDto);
-            }
-        }
-    }
 
     //부모 댓글 가져오는 메소드
     private Comment getParentComment(Long parentId) {

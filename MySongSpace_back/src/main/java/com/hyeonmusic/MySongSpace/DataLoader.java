@@ -38,7 +38,7 @@ public class DataLoader {
     }
 
     public static List<Track> generateTracks(Member member) {
-        return IntStream.range(0,1000000) // 0부터 99까지의 숫자 생성
+        return IntStream.range(0,100) // 0부터 99까지의 숫자 생성
                 .mapToObj(i -> createTrack(member, i)) // 각 숫자에 대해 트랙 생성
                 .collect(Collectors.toList()); // 리스트로 수집
     }

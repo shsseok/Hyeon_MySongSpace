@@ -22,7 +22,6 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
     public Page<Comment> findParentCommentByTrack(Pageable pageable, Track track) {
         QMember qMember = QMember.member;
         QComment qComment = QComment.comment;
-        QComment qChildComment = new QComment("childComment");
         QTrack qTrack = QTrack.track;
         List<Comment> content = queryFactory.selectFrom(qComment)
                 .join(qComment.member, qMember).fetchJoin()
@@ -41,20 +40,4 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
     }
 
-    @Override
-    public List<Comment> findAllChildCommentsByParentIds(List<Long> parentIds) {
-        QMember qMember = QMember.member;
-        QComment qComment = QComment.comment;
-        QComment qCommentChild = new QComment("childComment");
-        List<Comment> childComments = queryFactory.select(qComment)
-                .from(qComment)
-                .leftJoin(qComment.member, qMember).fetchJoin()
-                .leftJoin(qComment.children,qCommentChild).fetchJoin()
-                .where(qComment.parent.commentId.in(parentIds))
-                .orderBy(qComment.createdAt.desc())
-                .fetch();
-
-        return childComments;
-
-    }
 }

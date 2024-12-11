@@ -11,5 +11,5 @@ import java.util.List;
 public interface CommentRepositoryCustom {
     Page<Comment> findParentCommentByTrack(Pageable pageable, Track track);
 
-    List<Comment> findAllChildCommentsByParentIds(List<Long> parentIds);
+
 }
