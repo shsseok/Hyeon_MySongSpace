@@ -30,8 +30,9 @@ public class CommentController {
 
     // 3. 댓글 조회
     @GetMapping
-    public ResponseEntity<List<CommentResponseDTO>> getComments(@PathVariable("trackId") Long trackId) {
-        List<CommentResponseDTO> comments = commentService.getComments(trackId);
+    public ResponseEntity<List<CommentResponseDTO>> getComments(@PathVariable("trackId") Long trackId,
+                                                                @RequestParam(defaultValue = "0") int page) {
+        List<CommentResponseDTO> comments = commentService.getComments(trackId, page);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 

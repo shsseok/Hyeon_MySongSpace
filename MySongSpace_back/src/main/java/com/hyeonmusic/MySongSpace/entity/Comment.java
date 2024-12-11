@@ -2,6 +2,7 @@ package com.hyeonmusic.MySongSpace.entity;
 
 import com.hyeonmusic.MySongSpace.dto.CommentRequestDTO;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,6 +21,8 @@ public class Comment {
     @Column(nullable = false)
     @Lob
     private String content;
+
+    private Integer depth;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -48,14 +51,19 @@ public class Comment {
         comment.track = track;
         comment.member = member;
         comment.parent = parent;
+        comment.depth = comment.createDepth(parent);
         comment.createdAt = LocalDateTime.now();
         comment.updatedAt = LocalDateTime.now();
-        if (parent == null) {
-            comment.rating = commentRequestDTO.getRating();
-        } else {
-            comment.rating = null;
-        }
+        comment.rating = comment.determineRating(commentRequestDTO, parent);
         return comment;
+    }
+
+    public Integer determineRating(CommentRequestDTO commentRequestDTO, Comment parent) {
+        return (parent == null) ? commentRequestDTO.getRating() : null;
+    }
+
+    private Integer createDepth(Comment parent) {
+        return parent == null ? 0 : parent.getDepth() + 1;
     }
 
     public void updateContent(String content) {
