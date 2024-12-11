@@ -35,4 +35,25 @@ MySongSpace는 창작자와 청취자를 연결하는 공간으로, 다음과 �
 6. **카카오 소셜 로그인**
    - OAuth2, Spring Security, JWT를 활용한 카카오 소셜 로그인 구현
    - 사용자는 카카오 계정을 통해 간편하게 로그인 가능
+  
+##   ✅ 사용 기술 및 개발 환경
+
+![image](https://github.com/user-attachments/assets/86b2bc5e-5c85-49d5-983d-52cf877494e7)
+
+
+
+##   ✅ 서비스 아키텍쳐
+
+![image](https://github.com/user-attachments/assets/716c3cff-e531-45df-af38-d4e43a358cfc)
+
+
+##   ✅ ERD && Entity structure
+
+![image](https://github.com/user-attachments/assets/e81641f8-3e42-41ae-b3c8-c7854afc7a27)
+
+
+##   ✅ 프로젝트 하면서 겪었던 고민과 트레이드 오프
+
+
+
 
