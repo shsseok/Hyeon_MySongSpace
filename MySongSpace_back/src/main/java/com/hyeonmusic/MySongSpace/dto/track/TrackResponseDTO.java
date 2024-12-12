@@ -1,9 +1,8 @@
-package com.hyeonmusic.MySongSpace.dto;
+package com.hyeonmusic.MySongSpace.dto.track;
 
 import com.hyeonmusic.MySongSpace.entity.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.stream.Collectors;

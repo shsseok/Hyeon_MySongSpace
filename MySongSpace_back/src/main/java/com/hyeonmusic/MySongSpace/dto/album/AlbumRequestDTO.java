@@ -1,4 +1,4 @@
-package com.hyeonmusic.MySongSpace.dto;
+package com.hyeonmusic.MySongSpace.dto.album;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

@@ -1,11 +1,9 @@
 package com.hyeonmusic.MySongSpace.entity;
 
-import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
+import com.hyeonmusic.MySongSpace.dto.track.TrackUploadDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

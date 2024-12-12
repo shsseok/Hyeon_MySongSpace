@@ -1,14 +1,13 @@
 package com.hyeonmusic.MySongSpace.service;
 
-import com.hyeonmusic.MySongSpace.dto.CommentRequestDTO;
-import com.hyeonmusic.MySongSpace.dto.CommentResponseDTO;
+import com.hyeonmusic.MySongSpace.dto.comment.CommentRequestDTO;
+import com.hyeonmusic.MySongSpace.dto.comment.CommentResponseDTO;
 import com.hyeonmusic.MySongSpace.entity.Comment;
 import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.exception.CommentNotFoundException;
 import com.hyeonmusic.MySongSpace.exception.MemberNotFoundException;
 import com.hyeonmusic.MySongSpace.exception.TrackNotFoundException;
-import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
 import com.hyeonmusic.MySongSpace.repository.Comment.CommentRepository;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
@@ -16,12 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
 

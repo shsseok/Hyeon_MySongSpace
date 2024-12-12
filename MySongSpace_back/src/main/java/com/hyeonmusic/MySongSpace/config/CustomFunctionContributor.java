@@ -9,7 +9,7 @@ import static org.hibernate.type.StandardBasicTypes.DOUBLE;
 public class CustomFunctionContributor implements FunctionContributor {
 
     private static final String FUNCTION_NAME = "match_against";
-    private static final String FUNCTION_PATTERN = "MATCH(?1, ?2) AGAINST (?3 IN BOOLEAN MODE)";
+    private static final String FUNCTION_PATTERN = "match(?1, ?2) against (?3 in boolean mode)";
 
     @Override
     public void contributeFunctions(FunctionContributions functionContributions) {

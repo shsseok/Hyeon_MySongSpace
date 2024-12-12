@@ -1,7 +1,7 @@
 package com.hyeonmusic.MySongSpace.service;
 
-import com.hyeonmusic.MySongSpace.dto.TrackResponseDTO;
-import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
+import com.hyeonmusic.MySongSpace.dto.track.TrackResponseDTO;
+import com.hyeonmusic.MySongSpace.dto.track.TrackUploadDTO;
 import com.hyeonmusic.MySongSpace.entity.Genre;
 import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Mood;
@@ -9,7 +9,6 @@ import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.exception.FileUploadException;
 import com.hyeonmusic.MySongSpace.exception.MemberNotFoundException;
 import com.hyeonmusic.MySongSpace.exception.TrackNotFoundException;
-import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
 import lombok.RequiredArgsConstructor;

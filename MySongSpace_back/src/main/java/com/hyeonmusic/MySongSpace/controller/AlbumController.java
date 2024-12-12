@@ -1,12 +1,10 @@
 package com.hyeonmusic.MySongSpace.controller;
 
-import com.hyeonmusic.MySongSpace.dto.AlbumRequestDTO;
-import com.hyeonmusic.MySongSpace.dto.AlbumResponseDTO;
-import com.hyeonmusic.MySongSpace.dto.TrackResponseDTO;
+import com.hyeonmusic.MySongSpace.dto.album.AlbumRequestDTO;
+import com.hyeonmusic.MySongSpace.dto.album.AlbumResponseDTO;
+import com.hyeonmusic.MySongSpace.dto.track.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.service.AlbumService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

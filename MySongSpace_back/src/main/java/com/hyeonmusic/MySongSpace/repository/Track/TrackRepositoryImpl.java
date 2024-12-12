@@ -78,14 +78,19 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
     }
 
     private BooleanBuilder addKeywordFilter(BooleanBuilder booleanBuilder, String keyword) {
-        if (keyword != null) {
+        if (keyword != null && !keyword.isEmpty()) {
             booleanBuilder.and(
-                   qTrack.title.like('%'+keyword+'%')
-                           .or(qTrack.description.like('%'+keyword+'%'))
+                    Expressions.booleanTemplate(
+                            "function('match_against', {0}, {1}, {2}) > 0",
+                            qTrack.title,
+                            qTrack.description,
+                            keyword
+                    )
             );
         }
         return booleanBuilder;
     }
+
 
 
 }

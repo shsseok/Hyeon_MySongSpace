@@ -1,9 +1,8 @@
 package com.hyeonmusic.MySongSpace.controller;
 
 
-import com.hyeonmusic.MySongSpace.dto.CommentRequestDTO;
-import com.hyeonmusic.MySongSpace.dto.CommentResponseDTO;
-import com.hyeonmusic.MySongSpace.entity.Comment;
+import com.hyeonmusic.MySongSpace.dto.comment.CommentRequestDTO;
+import com.hyeonmusic.MySongSpace.dto.comment.CommentResponseDTO;
 import com.hyeonmusic.MySongSpace.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
