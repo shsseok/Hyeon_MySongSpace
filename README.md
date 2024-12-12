@@ -55,5 +55,37 @@ MySongSpace는 창작자와 청취자를 연결하는 공간으로, 다음과 �
 ##   ✅ 프로젝트 하면서 겪었던 고민과 트레이드 오프
 
 
+### 1. 안전한 파일 업로드에 대한 처리 chapter 1
 
+https://hyeonseokdelvelop.tistory.com/42
+
+---
+### 2. 안전한 파일 업로드에 대한 처리 chapter 2
+
+https://hyeonseokdelvelop.tistory.com/47
+
+---
+### 3. 좋아요 버튼의 숨겨진 딜레마 : 동시성 이슈
+
+[[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/46)](https://hyeonseokdelvelop.tistory.com/46)
+
+---
+
+### 4. 좋아요 버튼의 숨겨진 딜레마: DB Lock 관련
+
+[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/48)
+
+---
+
+### 5. Offset 페이징을 고려한 효율적인 대댓글 처리 방법
+
+[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/44)
+
+---
+
+### 6. 검색 쿼리가 너무 느려ㅜㅜ
+
+[[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/44)](https://hyeonseokdelvelop.tistory.com/49)
+
+---
 
