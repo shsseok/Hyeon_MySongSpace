@@ -28,17 +28,17 @@ public class DataLoader {
 
         // 초기 데이터를 추가
         List<Track> tracks = generateTracks(member);
-//        trackRepository.saveAll(tracks); // 생성한 Track 리스트를 저장
-        try {
-            saveTracksInBatch(tracks); // 배치로 저장
-        } catch (SQLException e) {
-            throw new RuntimeException("Batch insert failed", e);
-        }
-        System.out.println("초기 데이터 로드 완료");
+        trackRepository.saveAll(tracks); // 생성한 Track 리스트를 저장
+//        try {
+//            saveTracksInBatch(tracks); // 배치로 저장
+//        } catch (SQLException e) {
+//            throw new RuntimeException("Batch insert failed", e);
+//        }
+//        System.out.println("초기 데이터 로드 완료");
     }
 
     public static List<Track> generateTracks(Member member) {
-        return IntStream.range(0,1000000) // 0부터 99까지의 숫자 생성
+        return IntStream.range(0,100) // 0부터 99까지의 숫자 생성
                 .mapToObj(i -> createTrack(member, i)) // 각 숫자에 대해 트랙 생성
                 .collect(Collectors.toList()); // 리스트로 수집
     }
