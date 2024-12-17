@@ -91,7 +91,7 @@ https://hyeonseokdelvelop.tistory.com/47
 
 ### 7. 동적 쿼리와 배치 사이즈 최적화로 1+N 문제 해결 및 성능 개선
 
-[[[[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/44)](https://hyeonseokdelvelop.tistory.com/49)](https://hyeonseokdelvelop.tistory.com/45)](https://hyeonseokdelvelop.tistory.com/45)
+https://hyeonseokdelvelop.tistory.com/45
 
 ---
 
