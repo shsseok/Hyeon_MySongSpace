@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -38,7 +39,7 @@ public class DataLoader {
     }
 
     public static List<Track> generateTracks(Member member) {
-        return IntStream.range(0,100) // 0부터 99까지의 숫자 생성
+        return IntStream.range(0,1000) // 0부터 99까지의 숫자 생성
                 .mapToObj(i -> createTrack(member, i)) // 각 숫자에 대해 트랙 생성
                 .collect(Collectors.toList()); // 리스트로 수집
     }
@@ -77,7 +78,7 @@ public class DataLoader {
         return "Track " + index + ": " + topic + " Perfect for relaxation and exploration.";
     }
     private void saveTracksInBatch(List<Track> tracks) throws SQLException {
-        String sql = "INSERT INTO track (title, description, music_path, cover_path, duration, member_id, like_count) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO track (title, description, music_path, cover_path, duration, member_id, like_count, uploaded_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -91,7 +92,8 @@ public class DataLoader {
                 statement.setString(4, track.getCoverPath());
                 statement.setInt(5, track.getDuration());
                 statement.setLong(6, track.getMember().getMemberId());
-                statement.setLong(7, 0);
+                statement.setLong(7, 0); // like_count 초기값 설정
+                statement.setTimestamp(8, Timestamp.valueOf(LocalDateTime.now())); // uploaded_at 현재 시간 설정
                 statement.addBatch(); // 배치 추가
 
                 if (++count % batchSize == 0) {
@@ -101,6 +103,7 @@ public class DataLoader {
             statement.executeBatch(); // 남은 데이터 실행
         }
     }
+
     // 랜덤 장르를 선택하는 메서드
     private static List<Genre> getRandomGenres() {
         Random random = new Random();

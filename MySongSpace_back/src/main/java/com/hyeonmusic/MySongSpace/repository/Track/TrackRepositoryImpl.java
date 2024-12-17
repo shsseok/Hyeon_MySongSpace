@@ -38,7 +38,7 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
         addMoodsFilter(booleanBuilder, moods);
         addGenresFilter(booleanBuilder, genres);
         addKeywordFilter(booleanBuilder, keyword);
-        // 트랙 목록 쿼리 실행
+
         List<Track> content = queryFactory.selectFrom(qTrack)
                 .join(qTrack.member, qMember).fetchJoin()
                 .where(booleanBuilder)
@@ -85,20 +85,29 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
         }
         return booleanBuilder;
     }
-
     private BooleanBuilder addKeywordFilter(BooleanBuilder booleanBuilder, String keyword) {
-        if (keyword != null && !keyword.isEmpty()) {
+        if (keyword != null) {
             booleanBuilder.and(
-                    Expressions.booleanTemplate(
-                            "function('match_against', {0}, {1}, {2}) > 0",
-                            qTrack.title,
-                            qTrack.description,
-                            keyword
-                    )
+                    qTrack.title.like('%'+keyword+'%')
+                            .or(qTrack.description.like('%'+keyword+'%'))
             );
         }
         return booleanBuilder;
     }
+
+//    private BooleanBuilder addKeywordFilter(BooleanBuilder booleanBuilder, String keyword) {
+//        if (keyword != null && !keyword.isEmpty()) {
+//            booleanBuilder.and(
+//                    Expressions.booleanTemplate(
+//                            "function('match_against', {0}, {1}, {2}) > 0",
+//                            qTrack.title,
+//                            qTrack.description,
+//                            keyword
+//                    )
+//            );
+//        }
+//        return booleanBuilder;
+//    }
 
 
 }
