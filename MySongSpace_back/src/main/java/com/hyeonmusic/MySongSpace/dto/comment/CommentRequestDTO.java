@@ -1,4 +1,4 @@
-package com.hyeonmusic.MySongSpace.dto;
+package com.hyeonmusic.MySongSpace.dto.comment;
 
 
 import jakarta.validation.constraints.NotNull;

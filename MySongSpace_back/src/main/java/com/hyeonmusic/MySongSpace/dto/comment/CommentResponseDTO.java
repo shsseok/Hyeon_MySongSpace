@@ -1,4 +1,4 @@
-package com.hyeonmusic.MySongSpace.dto;
+package com.hyeonmusic.MySongSpace.dto.comment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.hyeonmusic.MySongSpace.entity.Comment;

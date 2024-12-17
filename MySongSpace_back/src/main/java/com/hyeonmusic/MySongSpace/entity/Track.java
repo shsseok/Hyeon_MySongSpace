@@ -1,8 +1,7 @@
 package com.hyeonmusic.MySongSpace.entity;
 
-import com.hyeonmusic.MySongSpace.dto.TrackUploadDTO;
+import com.hyeonmusic.MySongSpace.dto.track.TrackUploadDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
@@ -38,7 +37,7 @@ public class Track {
 
     // 앨범과의 관계를 관리하기 위한 리스트
     @OneToMany(mappedBy = "track", cascade = CascadeType.ALL)
-    private List<AlbumTrack> albumTracks = new ArrayList<>(); // 중간 엔티티 리스트
+    private List<AlbumTrack> albumTracks = new ArrayList<>();
 
     @OneToMany(mappedBy = "track")
     private List<Comment> comments = new ArrayList<>();

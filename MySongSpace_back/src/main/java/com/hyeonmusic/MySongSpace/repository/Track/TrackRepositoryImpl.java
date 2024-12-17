@@ -4,6 +4,7 @@ import com.hyeonmusic.MySongSpace.entity.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -37,18 +38,15 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
         addMoodsFilter(booleanBuilder, moods);
         addGenresFilter(booleanBuilder, genres);
         addKeywordFilter(booleanBuilder, keyword);
-        // 트랙 목록 쿼리 실행
+
         List<Track> content = queryFactory.selectFrom(qTrack)
                 .join(qTrack.member, qMember).fetchJoin()
-                .leftJoin(qTrack.genres, qTrackGenre).fetchJoin()
-                .leftJoin(qTrack.moods, qTrackMood)
                 .where(booleanBuilder)
                 .orderBy(orderMethod(sortBy))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // 총 카운트 쿼리 실행
         JPAQuery<Long> countQuery = queryFactory.select(qTrack.count())
                 .from(qTrack)
                 .where(booleanBuilder);
@@ -65,27 +63,51 @@ public class TrackRepositoryImpl implements TrackRepositoryCustom {
 
     private BooleanBuilder addMoodsFilter(BooleanBuilder booleanBuilder, List<Mood> moods) {
         if (moods != null && !moods.isEmpty()) {
-            moods.forEach(mood -> booleanBuilder.and(qTrackMood.mood.eq(mood)));
+            booleanBuilder.and(qTrack.trackId.in(
+                    JPAExpressions.select(qTrackMood.track.trackId)
+                            .from(qTrackMood)
+                            .where(qTrackMood.mood.in(moods))
+                            .groupBy(qTrackMood.track.trackId)
+                            .having(qTrackMood.mood.countDistinct().eq((long) moods.size()))));
+
         }
         return booleanBuilder;
     }
 
     private BooleanBuilder addGenresFilter(BooleanBuilder booleanBuilder, List<Genre> genres) {
         if (genres != null && !genres.isEmpty()) {
-            genres.forEach(genre -> booleanBuilder.and(qTrackGenre.genre.eq(genre)));
+            booleanBuilder.and(qTrack.trackId.in(
+                    JPAExpressions.select(qTrackGenre.track.trackId)
+                            .from(qTrackGenre)
+                            .where(qTrackGenre.genre.in(genres))
+                            .groupBy(qTrackGenre.track.trackId)
+                            .having(qTrackGenre.genre.countDistinct().eq((long) genres.size()))));
         }
         return booleanBuilder;
     }
-
     private BooleanBuilder addKeywordFilter(BooleanBuilder booleanBuilder, String keyword) {
         if (keyword != null) {
             booleanBuilder.and(
-                   qTrack.title.like('%'+keyword+'%')
-                           .or(qTrack.description.like('%'+keyword+'%'))
+                    qTrack.title.like('%'+keyword+'%')
+                            .or(qTrack.description.like('%'+keyword+'%'))
             );
         }
         return booleanBuilder;
     }
+
+//    private BooleanBuilder addKeywordFilter(BooleanBuilder booleanBuilder, String keyword) {
+//        if (keyword != null && !keyword.isEmpty()) {
+//            booleanBuilder.and(
+//                    Expressions.booleanTemplate(
+//                            "function('match_against', {0}, {1}, {2}) > 0",
+//                            qTrack.title,
+//                            qTrack.description,
+//                            keyword
+//                    )
+//            );
+//        }
+//        return booleanBuilder;
+//    }
 
 
 }

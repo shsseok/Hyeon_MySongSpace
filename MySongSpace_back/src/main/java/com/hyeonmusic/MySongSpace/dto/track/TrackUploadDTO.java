@@ -1,4 +1,4 @@
-package com.hyeonmusic.MySongSpace.dto;
+package com.hyeonmusic.MySongSpace.dto.track;
 
 import com.hyeonmusic.MySongSpace.entity.Genre;
 import com.hyeonmusic.MySongSpace.entity.Mood;

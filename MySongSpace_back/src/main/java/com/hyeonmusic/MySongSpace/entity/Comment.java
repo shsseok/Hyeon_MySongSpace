@@ -1,8 +1,7 @@
 package com.hyeonmusic.MySongSpace.entity;
 
-import com.hyeonmusic.MySongSpace.dto.CommentRequestDTO;
+import com.hyeonmusic.MySongSpace.dto.comment.CommentRequestDTO;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

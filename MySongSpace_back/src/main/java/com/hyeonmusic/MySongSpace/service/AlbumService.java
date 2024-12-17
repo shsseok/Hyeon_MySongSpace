@@ -1,19 +1,17 @@
 package com.hyeonmusic.MySongSpace.service;
 
-import com.hyeonmusic.MySongSpace.dto.AlbumRequestDTO;
-import com.hyeonmusic.MySongSpace.dto.AlbumResponseDTO;
-import com.hyeonmusic.MySongSpace.dto.TrackResponseDTO;
+import com.hyeonmusic.MySongSpace.dto.album.AlbumRequestDTO;
+import com.hyeonmusic.MySongSpace.dto.album.AlbumResponseDTO;
+import com.hyeonmusic.MySongSpace.dto.track.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.entity.Album;
 import com.hyeonmusic.MySongSpace.entity.AlbumTrack;
 import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.exception.*;
-import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
 import com.hyeonmusic.MySongSpace.repository.Album.AlbumRepository;
 import com.hyeonmusic.MySongSpace.repository.Album.AlbumTrackRepository;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
 import com.hyeonmusic.MySongSpace.repository.Track.TrackRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
