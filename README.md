@@ -36,62 +36,15 @@ MySongSpace는 창작자와 청취자를 연결하는 공간으로, 다음과 �
    - OAuth2, Spring Security, JWT를 활용한 카카오 소셜 로그인 구현
    - 사용자는 카카오 계정을 통해 간편하게 로그인 가능
   
-##   ✅ 사용 기술 및 개발 환경
-
-![image](https://github.com/user-attachments/assets/86b2bc5e-5c85-49d5-983d-52cf877494e7)
 
 
-
-##   ✅ 서비스 아키텍쳐
+##   아키텍쳐
 
 ![image](https://github.com/user-attachments/assets/716c3cff-e531-45df-af38-d4e43a358cfc)
 
 
-##   ✅ ERD && Entity structure
+##   ERD && Entity structure
 
 ![image](https://github.com/user-attachments/assets/e81641f8-3e42-41ae-b3c8-c7854afc7a27)
 
-
-##   ✅ 프로젝트 하면서 겪었던 고민과 트레이드 오프
-
-
-### 1. 안전한 파일 업로드에 대한 처리 chapter 1
-
-https://hyeonseokdelvelop.tistory.com/42
-
----
-### 2. 안전한 파일 업로드에 대한 처리 chapter 2
-
-https://hyeonseokdelvelop.tistory.com/47
-
----
-### 3. 좋아요 버튼의 숨겨진 딜레마 : 동시성 이슈
-
-[[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/46)](https://hyeonseokdelvelop.tistory.com/46)
-
----
-
-### 4. 좋아요 버튼의 숨겨진 딜레마: DB Lock 관련
-
-[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/48)
-
----
-
-### 5. Offset 페이징을 고려한 효율적인 대댓글 처리 방법
-
-[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/44)
-
----
-
-### 6. 검색 쿼리가 너무 느려ㅜㅜ
-
-[[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/44)](https://hyeonseokdelvelop.tistory.com/49)
-
----
-
-### 7. 동적 쿼리와 배치 사이즈 최적화로 1+N 문제 해결 및 성능 개선
-
-https://hyeonseokdelvelop.tistory.com/45
-
----
 
