@@ -4,6 +4,7 @@ import com.hyeonmusic.MySongSpace.entity.Likes;
 import com.hyeonmusic.MySongSpace.entity.Member;
 import com.hyeonmusic.MySongSpace.entity.Track;
 import com.hyeonmusic.MySongSpace.exception.MemberNotFoundException;
+import com.hyeonmusic.MySongSpace.exception.SelfTrackLikeNotAllowedException;
 import com.hyeonmusic.MySongSpace.exception.TrackNotFoundException;
 import com.hyeonmusic.MySongSpace.repository.LikeRepository;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
@@ -38,7 +39,7 @@ public class LikeService {
         Track track = trackRepository.findByIdWithLock(trackId)
                 .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
         if (track.getMember().getMemberId() == member.getMemberId()) {
-            throw new IllegalStateException("본인 트랙에는 좋아요를 누를 수 없습니다.");
+            throw new SelfTrackLikeNotAllowedException(SELF_LIKE_NOT_ALLOWED);
         }
         Likes existingLike = likeRepository.findByTrackAndMember(track, member);
         if (existingLike != null) {

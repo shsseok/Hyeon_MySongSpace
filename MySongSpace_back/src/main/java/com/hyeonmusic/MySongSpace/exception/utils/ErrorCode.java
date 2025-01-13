@@ -29,7 +29,10 @@ public enum ErrorCode {
     ALBUM_NOT_FOUND(NOT_FOUND, "앨범을 찾을 수 없습니다."),
     //comment
     PARENT_COMMENT_NOT_FOUND(NOT_FOUND, "부모 댓글을 찾을 수 없습니다."),
+    ROOT_COMMENT_NOT_FOUND(NOT_FOUND, "최상위 댓글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    //like
+    SELF_LIKE_NOT_ALLOWED(BAD_REQUEST,"본인 트랙에는 좋아요를 달 수 없습니다."),
     // global
     RESOURCE_LOCKED(LOCKED, "자원이 잠겨있어 접근할 수 없습니다."),
     NO_ACCESS(FORBIDDEN, "접근 권한이 없습니다."),
