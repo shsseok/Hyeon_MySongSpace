@@ -91,7 +91,7 @@ public class CommentService {
 
     //최상위 댓글 고유 식별자 가져오는 메소드
     private List<Long> getRootIds(Page<Comment> rootComments) {
-        List<Long> rootIds = rootComments.getContent().stream()
+        List<Long> rootIds = rootComments.stream()
                 .map(Comment::getCommentId)
                 .collect(Collectors.toList());
         return rootIds;
