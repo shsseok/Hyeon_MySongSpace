@@ -20,6 +20,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
             "WHERE c.commentId = :rootId")
     Long findRootIdByCommentId(@Param("rootId") Long rootId);
 
+    @Query("SELECT c FROM Comment c " +
+            "JOIN FETCH c.member cm " +
+            "WHERE c.track = :track AND c.rootId IN :rootIds " +
+            "ORDER BY c.depth ASC, c.createdAt desc")
+    List<Comment> findChildCommentByRootIds(@Param("track") Track track, @Param("rootIds") List<Long> rootIds);
 
 
 }

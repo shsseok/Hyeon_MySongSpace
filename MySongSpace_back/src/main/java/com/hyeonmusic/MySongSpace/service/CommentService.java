@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
 
@@ -65,10 +66,35 @@ public class CommentService {
                 .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
         Pageable pageable = PageRequest.of(page, 10);
 
-        // 부모 댓글 10개 가져오기
+        //최상위 댓글 10개 가져오기
+        Page<Comment> rootComments = commentRepository.findParentCommentByTrack(pageable, track);
+        List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
+        HashMap<Long, CommentResponseDTO> parentMap = new HashMap<>();
+        rootComments.forEach(rootComment -> {
+            CommentResponseDTO parentCommentDTO = CommentResponseDTO.convertCommentToDto(rootComment);
+            commentResponseDTOList.add(parentCommentDTO);
+            parentMap.put(rootComment.getCommentId(), parentCommentDTO);
+        });
+        //최상위 댓글 Id 리스트 뽑아오기
+        List<Long> rootIds = getRootIds(rootComments);
+        List<Comment> childComments = commentRepository.findChildCommentByRootIds(track, rootIds);
 
+        childComments.forEach(childComment -> {
+            CommentResponseDTO parentDTO = parentMap.get(childComment.getParent().getCommentId());
+            CommentResponseDTO childDTO = CommentResponseDTO.convertCommentToDto(childComment);
+            parentDTO.getChildren().add(childDTO);
+            parentMap.put(childComment.getCommentId(), childDTO);
+        });
 
-        return null;
+        return commentResponseDTOList;
+    }
+
+    //최상위 댓글 고유 식별자 가져오는 메소드
+    private List<Long> getRootIds(Page<Comment> rootComments) {
+        List<Long> rootIds = rootComments.getContent().stream()
+                .map(Comment::getCommentId)
+                .collect(Collectors.toList());
+        return rootIds;
     }
 
 
