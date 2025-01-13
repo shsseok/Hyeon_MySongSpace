@@ -17,5 +17,7 @@ public class CommentRequestDTO {
 
     private Long parentId; // 대댓글일 경우, 부모 댓글 ID (최상위 댓글의 경우 null 가능)
 
+    private Long rootId; // 최상위 댓글 고유 ID (최상위 댓글일 경우 null 가능)
+
     private Integer rating; // 별점 (최상위 댓글에만 필요, 대댓글은 null일 수 있음)
 }

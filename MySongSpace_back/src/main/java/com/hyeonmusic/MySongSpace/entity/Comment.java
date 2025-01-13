@@ -23,6 +23,9 @@ public class Comment {
 
     private Integer depth;
 
+    //최상위 댓글 고유 식별자
+    private Long rootId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Comment parent;
@@ -44,12 +47,13 @@ public class Comment {
 
     private Integer rating; // 별점 (대댓글에는 null로 설정)
 
-    public static Comment createComment(CommentRequestDTO commentRequestDTO, Track track, Member member, Comment parent) {
+    public static Comment createComment(CommentRequestDTO commentRequestDTO, Track track, Member member, Comment parent, Long rootId) {
         Comment comment = new Comment();
         comment.content = commentRequestDTO.getContent();
         comment.track = track;
         comment.member = member;
         comment.parent = parent;
+        comment.rootId = rootId;
         comment.depth = comment.createDepth(parent);
         comment.createdAt = LocalDateTime.now();
         comment.updatedAt = LocalDateTime.now();

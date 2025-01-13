@@ -40,7 +40,8 @@ public class CommentService {
         Member member = memberRepository.findById(commentRequestDTO.getMemberId())
                 .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
         Comment parentComment = getParentComment(commentRequestDTO.getParentId());
-        Comment comment = Comment.createComment(commentRequestDTO, track, member, parentComment);
+        Long rootId = getRootIdIfExists(commentRequestDTO.getRootId());
+        Comment comment = Comment.createComment(commentRequestDTO, track, member, parentComment, rootId);
         commentRepository.save(comment);
 
     }
@@ -65,27 +66,9 @@ public class CommentService {
         Pageable pageable = PageRequest.of(page, 10);
 
         // 부모 댓글 10개 가져오기
-        Page<Comment> parentComments = commentRepository.findParentCommentByTrack(pageable, track);
-        List<CommentResponseDTO> commentResponseDTOList = new ArrayList<>();
-        HashMap<Long, CommentResponseDTO> childMap = new HashMap<>();
-        parentComments.forEach(parentComment -> {
-            CommentResponseDTO parentCommentResponseDTO = CommentResponseDTO.convertCommentToDto(parentComment);
-            commentResponseDTOList.add(parentCommentResponseDTO);
-            childMap.put(parentComment.getCommentId(), parentCommentResponseDTO);
-        });
-        List<Comment> childComments = commentRepository.findChildCommentByTrack(track);
-        childComments.forEach(childComment -> {
-            CommentResponseDTO parentDto = childMap.get(childComment.getParent().getCommentId());
-            if (parentDto != null) {
-                CommentResponseDTO childDto = CommentResponseDTO.convertCommentToDto(childComment);
-                parentDto.getChildren().add(childDto);
-                childMap.put(childComment.getCommentId(), childDto);
-            }
-
-        });
 
 
-        return commentResponseDTOList;
+        return null;
     }
 
 
@@ -97,4 +80,15 @@ public class CommentService {
         }
         return null;
     }
+
+    //최상위 댓글이 존재하는지 안하는지 판단 후 rootId 반환
+    private Long getRootIdIfExists(Long rootId) {
+        //만약에 최상위 댓글 Id 가 null 이거나 최상위 댓글이 실제로 존재하지 않으면
+        if (rootId == null || !commentRepository.existsById(rootId)) {
+            return null;
+        }
+        return rootId;
+    }
+
+
 }

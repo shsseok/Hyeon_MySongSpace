@@ -41,7 +41,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        log.error("DataIntegrityViolationException is occurred. ", e);
         return toResponse(RESOURCE_NOT_FOUND, RESOURCE_NOT_FOUND.getMessage());
     }
 

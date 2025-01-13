@@ -28,11 +28,10 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
         String accessToken = resolveToken(request);
 
-        // accessToken 검증
         if (tokenProvider.validateToken(accessToken)) {
             setAuthentication(accessToken);
         } else {
-            // 만료되었을 경우 accessToken 재발급
+
             String reissueAccessToken = tokenProvider.reissueAccessToken(accessToken);
 
             if (StringUtils.hasText(reissueAccessToken)) {
