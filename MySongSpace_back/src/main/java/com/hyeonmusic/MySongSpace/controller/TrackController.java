@@ -20,8 +20,8 @@ public class TrackController {
 
     // 1. 트랙 업로드 (POST)
     @PostMapping
-    public ResponseEntity<String> uploadTrack(@ModelAttribute TrackUploadDTO trackUploadDTO) {
-        trackService.uploadTrack(trackUploadDTO);
+    public ResponseEntity<String> saveTrack(@ModelAttribute TrackUploadDTO trackUploadDTO) {
+        trackService.saveTrack(trackUploadDTO);
         return ResponseEntity.ok("트랙 업로드 성공");
     }
 

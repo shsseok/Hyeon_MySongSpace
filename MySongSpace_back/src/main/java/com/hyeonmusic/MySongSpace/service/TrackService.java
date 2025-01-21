@@ -1,5 +1,6 @@
 package com.hyeonmusic.MySongSpace.service;
 
+import com.hyeonmusic.MySongSpace.common.utils.FileType;
 import com.hyeonmusic.MySongSpace.dto.track.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.dto.track.TrackUploadDTO;
 import com.hyeonmusic.MySongSpace.entity.Genre;
@@ -37,15 +38,15 @@ public class TrackService {
 
 
     @Transactional
-    public void uploadTrack(TrackUploadDTO trackUploadDTO) {
+    public void saveTrack(TrackUploadDTO trackUploadDTO) {
 
         Member member = memberRepository.findById(trackUploadDTO.getMemberId())
                 .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
         String musicPath = null;
         String coverPath = null;
         try {
-            musicPath = fileService.uploadFile(trackUploadDTO.getTrackFile(), "music");
-            coverPath = fileService.uploadFile(trackUploadDTO.getTrackCover(), "covers");
+            musicPath = fileService.uploadFile(trackUploadDTO.getTrackFile(), FileType.MUSIC);
+            coverPath = fileService.uploadFile(trackUploadDTO.getTrackCover(), FileType.COVERS);
             Track track = Track.createTrack(trackUploadDTO, member, musicPath, coverPath);
             trackRepository.save(track);
         } catch (Exception e) {

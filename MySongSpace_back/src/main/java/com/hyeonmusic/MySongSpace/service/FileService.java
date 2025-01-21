@@ -40,7 +40,7 @@ public class FileService {
 
             ObjectMetadata metadata = createMetadata(file);
 
-            // 업로드한 파일의 상대 경로 반환
+            // 업로드한 파일의 상대 경로 반환 해준다!!
             return uploadToS3(file, fullFilePath, metadata);
 
         } catch (IOException e) {
@@ -60,6 +60,7 @@ public class FileService {
             }
             amazonS3.deleteObject(bucketName, decodedFilePath);
         } catch (FileNotFoundException e) {
+            //삭제할 파일이 스토리지에 없으면 예외를 던짐
             throw e;
         } catch (IOException e) {
             throw new FileDeleteException(FILE_DELETE_FAILED);
@@ -74,7 +75,7 @@ public class FileService {
             case "covers":
                 return "covers/";
             default:
-                throw new IllegalArgumentException("Invalid file type: " + fileType);
+                throw new IllegalArgumentException(fileType+"서버 오류");
         }
     }
 
