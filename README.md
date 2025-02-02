@@ -81,7 +81,7 @@ https://hyeonseokdelvelop.tistory.com/47
 
 ---
 
-### 6. 검색 쿼리가 너무 느려ㅜㅜ
+### 6. 검색 쿼리가 너무 느려ㅜㅜ(개선중)
 
 [[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/44)](https://hyeonseokdelvelop.tistory.com/49)
 
