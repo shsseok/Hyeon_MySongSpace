@@ -1,13 +1,8 @@
 package com.hyeonmusic.MySongSpace.service;
 
-import com.hyeonmusic.MySongSpace.common.utils.FileType;
 import com.hyeonmusic.MySongSpace.dto.track.TrackResponseDTO;
 import com.hyeonmusic.MySongSpace.dto.track.TrackUploadDTO;
-import com.hyeonmusic.MySongSpace.entity.Genre;
-import com.hyeonmusic.MySongSpace.entity.Member;
-import com.hyeonmusic.MySongSpace.entity.Mood;
-import com.hyeonmusic.MySongSpace.entity.Track;
-import com.hyeonmusic.MySongSpace.exception.FileUploadException;
+import com.hyeonmusic.MySongSpace.entity.*;
 import com.hyeonmusic.MySongSpace.exception.MemberNotFoundException;
 import com.hyeonmusic.MySongSpace.exception.TrackNotFoundException;
 import com.hyeonmusic.MySongSpace.repository.MemberRepository;
@@ -20,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,32 +35,23 @@ public class TrackService {
 
 
     @Transactional
-    public void saveTrack(TrackUploadDTO trackUploadDTO) {
+    public void saveTrack(TrackUploadDTO trackUploadDTO, FilePath filePath) {
 
         Member member = memberRepository.findById(trackUploadDTO.getMemberId())
                 .orElseThrow(() -> new MemberNotFoundException(MEMBER_NOT_FOUND));
-        String musicPath = null;
-        String coverPath = null;
-        try {
-            musicPath = fileService.uploadFile(trackUploadDTO.getTrackFile(), FileType.MUSIC);
-            coverPath = fileService.uploadFile(trackUploadDTO.getTrackCover(), FileType.COVERS);
-            Track track = Track.createTrack(trackUploadDTO, member, musicPath, coverPath);
-            trackRepository.save(track);
-        } catch (Exception e) {
-            // 이미 업로드된 파일이 있을 경우 삭제 시도
-            deleteIfFileUploaded(musicPath, coverPath);
-            throw new FileUploadException(FILE_UPLOAD_FAILED);
-        }
+
+        Track track = Track.createTrack(trackUploadDTO, member, filePath.getMusicPath(), filePath.getMusicPath());
+        trackRepository.save(track);
+
     }
 
     @Transactional
     public void deleteTrack(Long id) {
-        // ID로 트랙 조회
         Track track = trackRepository.findById(id)
                 .orElseThrow(() -> new TrackNotFoundException(TRACK_NOT_FOUND));
-        fileService.deleteFile(track.getMusicPath().substring(1));
-        fileService.deleteFile(track.getCoverPath().substring(1));
-        trackRepository.delete(track); // 트랙 삭제
+        fileService.deleteFile(track.getFilePath().getMusicPath().substring(1));
+        fileService.deleteFile(track.getFilePath().getCoverPath().substring(1));
+        trackRepository.delete(track);
     }
 
     public List<TrackResponseDTO> getAllTracks(int page, String sortBy, List<Mood> moods, List<Genre> genres, String keyword) {
@@ -83,11 +71,6 @@ public class TrackService {
 
     private String getSortDirection(String sortBy) {
         return sortBy.equals("popular") ? "likeCount" : "uploadedAt"; // 최신순과 인기순 모두 DESC로 설정
-    }
-
-    private void deleteIfFileUploaded(String musicPath, String coverPath) {
-        if (musicPath != null) fileService.deleteFile(musicPath.substring(1));
-        if (coverPath != null) fileService.deleteFile(coverPath.substring(1));
     }
 
 }

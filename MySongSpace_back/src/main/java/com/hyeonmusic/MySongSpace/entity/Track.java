@@ -18,10 +18,12 @@ public class Track {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long trackId; // 트랙 ID
-    private String coverPath; //이미지 경로
     private String title; // 트랙 제목
     private String description; // 트랙 설명
-    private String musicPath; // 트랙 오디오 파일 경로
+
+    // 음악 파일 PATH, 이미지 파일 PATH
+    @Embedded
+    private FilePath filePath;
     private int duration; // 트랙 지속 시간 (초 단위)
     private int likeCount;
     private LocalDateTime uploadedAt; // 업로드 시간
@@ -49,8 +51,7 @@ public class Track {
     public Track(String title, String description, String musicPath, String coverPath, int duration, List<Genre> genres, List<Mood> moods, Member member) {
         this.title = title;
         this.description = description;
-        this.musicPath = musicPath;
-        this.coverPath = coverPath;
+        this.filePath = new FilePath(musicPath, coverPath);
         this.duration = duration;
         this.genres = TrackGenre.createTrackGenreList(this, genres);
         this.moods = TrackMood.createTrackMoodList(this, moods);
@@ -59,12 +60,11 @@ public class Track {
     }
 
 
-    public static Track createTrack(TrackUploadDTO trackUploadDTO, Member member, String filePath, String coverPath) {
+    public static Track createTrack(TrackUploadDTO trackUploadDTO, Member member, String musicPath, String coverPath) {
         Track track = new Track();
         track.title = trackUploadDTO.getTitle();
         track.description = trackUploadDTO.getDescription();
-        track.musicPath = filePath;
-        track.coverPath = coverPath;
+        track.filePath= new FilePath(musicPath, coverPath);
         track.duration = trackUploadDTO.getDuration();
         track.genres = TrackGenre.createTrackGenreList(track, trackUploadDTO.getGenres());
         track.moods = TrackMood.createTrackMoodList(track, trackUploadDTO.getMoods());

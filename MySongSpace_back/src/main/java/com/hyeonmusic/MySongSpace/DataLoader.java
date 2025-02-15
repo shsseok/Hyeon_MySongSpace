@@ -88,8 +88,8 @@ public class DataLoader {
             for (Track track : tracks) {
                 statement.setString(1, track.getTitle());
                 statement.setString(2, track.getDescription());
-                statement.setString(3, track.getMusicPath());
-                statement.setString(4, track.getCoverPath());
+                statement.setString(3, track.getFilePath().getMusicPath());
+                statement.setString(4, track.getFilePath().getCoverPath());
                 statement.setInt(5, track.getDuration());
                 statement.setLong(6, track.getMember().getMemberId());
                 statement.setLong(7, 0); // like_count 초기값 설정

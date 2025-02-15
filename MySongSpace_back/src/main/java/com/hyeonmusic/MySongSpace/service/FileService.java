@@ -1,21 +1,25 @@
 package com.hyeonmusic.MySongSpace.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.hyeonmusic.MySongSpace.common.utils.FileType;
+import com.hyeonmusic.MySongSpace.entity.FilePath;
 import com.hyeonmusic.MySongSpace.exception.FileDeleteException;
 import com.hyeonmusic.MySongSpace.exception.FileNotFoundException;
 import com.hyeonmusic.MySongSpace.exception.FileUploadException;
-import com.hyeonmusic.MySongSpace.exception.utils.ErrorCode;
+import com.hyeonmusic.MySongSpace.exception.S3UploadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.hyeonmusic.MySongSpace.exception.utils.ErrorCode.*;
@@ -32,38 +36,57 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String uploadFile(MultipartFile file, String fileType) {
+    //파일 여러개 업로드
+    public FilePath uploadTrackFileAndTrackCoverFile(MultipartFile trackMusicFile, MultipartFile trackCoverFile) {
+        String coverPath = null;
+        String musicPath = null;
         try {
-            String folderPath = getFolderPath(fileType);
-            String fileName = generateUniqueFileName(file.getOriginalFilename());
-            String fullFilePath = folderPath + fileName;
+            coverPath = uploadFile(trackCoverFile, FileType.COVERS);
+            musicPath = uploadFile(trackMusicFile, FileType.MUSIC);
+            FilePath filePath = new FilePath(musicPath, coverPath);
+            return filePath;
+        } catch (Exception e) {
+            deleteIfFileUploaded(musicPath, coverPath);
+            if (e instanceof S3UploadException) {
+                throw new S3UploadException(S3_SERVICE_ERROR);
+            }else {
+                throw new FileUploadException(FILE_UPLOAD_FAILED);
+            }
+        }
+    }
 
+    //단일 파일 업로드
+    public String uploadFile(MultipartFile file, String fileType) {
+
+        try {
+            String fullFilePath = getFolderPath(fileType) + generateUniqueFileName(file.getOriginalFilename());
             ObjectMetadata metadata = createMetadata(file);
-
-            // 업로드한 파일의 상대 경로 반환 해준다!!
             return uploadToS3(file, fullFilePath, metadata);
-
+        } catch (AmazonS3Exception s) {
+            //S3 쪽에서 예외나 버그가 발생했을 경우에 처리
+            throw s;
         } catch (IOException e) {
+            // 파일 스트림 관련 예외 발생 처리
             throw new FileUploadException(FILE_UPLOAD_FAILED);
         }
     }
 
-    // 파일 삭제 메소드 추가
     public void deleteFile(String filePath) {
         try {
-            // URL 디코딩
+            if (filePath.startsWith("/")) {
+                filePath = filePath.substring(1);
+            }
             String decodedFilePath = URLDecoder.decode(filePath, StandardCharsets.UTF_8.toString());
-            // S3에서 파일 삭제
+            log.info("삭제할 파일={}", decodedFilePath);
             if (!amazonS3.doesObjectExist(bucketName, decodedFilePath)) {
                 log.info("삭제할 파일이 스토리지에 없음");
                 throw new FileNotFoundException(FILE_NOT_FOUND);
             }
             amazonS3.deleteObject(bucketName, decodedFilePath);
-        } catch (FileNotFoundException e) {
-            //삭제할 파일이 스토리지에 없으면 예외를 던짐
-            throw e;
-        } catch (IOException e) {
-            throw new FileDeleteException(FILE_DELETE_FAILED);
+        } catch (Exception e) {
+            //위의 경우를 제외한 모든 예외는 하나로 통일
+            log.error("삭제 버그 에러 메시지", e);
+            throw new FileDeleteException(FILE_DELETE_FAILED,e.getMessage());
         }
     }
 
@@ -75,16 +98,24 @@ public class FileService {
             case "covers":
                 return "covers/";
             default:
-                throw new IllegalArgumentException(fileType+"서버 오류");
+                throw new IllegalArgumentException(fileType + "서버 오류");
         }
     }
 
-    // 고유한 파일 이름 생성
+    // 삭제 후속처리 로직
+    private void deleteIfFileUploaded(String musicPath, String coverPath) {
+        if (musicPath != null) {
+            deleteFile(musicPath);
+        }
+        if (coverPath != null) {
+            deleteFile(coverPath);
+        }
+    }
+
     private String generateUniqueFileName(String originalFilename) {
         return UUID.randomUUID() + "_" + originalFilename;
     }
 
-    // 파일 메타데이터 생성
     private ObjectMetadata createMetadata(MultipartFile file) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
@@ -97,4 +128,6 @@ public class FileService {
         amazonS3.putObject(bucketName, fullFilePath, file.getInputStream(), metadata);
         return amazonS3.getUrl(bucketName, fullFilePath).getPath().toString();
     }
+
+
 }
