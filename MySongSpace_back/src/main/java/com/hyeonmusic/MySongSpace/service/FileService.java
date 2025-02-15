@@ -49,26 +49,17 @@ public class FileService {
             deleteIfFileUploaded(musicPath, coverPath);
             if (e instanceof S3UploadException) {
                 throw new S3UploadException(S3_SERVICE_ERROR);
-            }else {
+            } else {
                 throw new FileUploadException(FILE_UPLOAD_FAILED);
             }
         }
     }
 
     //단일 파일 업로드
-    public String uploadFile(MultipartFile file, String fileType) {
-
-        try {
-            String fullFilePath = getFolderPath(fileType) + generateUniqueFileName(file.getOriginalFilename());
-            ObjectMetadata metadata = createMetadata(file);
-            return uploadToS3(file, fullFilePath, metadata);
-        } catch (AmazonS3Exception s) {
-            //S3 쪽에서 예외나 버그가 발생했을 경우에 처리
-            throw s;
-        } catch (IOException e) {
-            // 파일 스트림 관련 예외 발생 처리
-            throw new FileUploadException(FILE_UPLOAD_FAILED);
-        }
+    public String uploadFile(MultipartFile file, String fileType) throws IOException {
+        String fullFilePath = getFolderPath(fileType) + generateUniqueFileName(file.getOriginalFilename());
+        ObjectMetadata metadata = createMetadata(file);
+        return uploadToS3(file, fullFilePath, metadata);
     }
 
     public void deleteFile(String filePath) {
@@ -86,7 +77,7 @@ public class FileService {
         } catch (Exception e) {
             //위의 경우를 제외한 모든 예외는 하나로 통일
             log.error("삭제 버그 에러 메시지", e);
-            throw new FileDeleteException(FILE_DELETE_FAILED,e.getMessage());
+            throw new FileDeleteException(FILE_DELETE_FAILED, e.getMessage());
         }
     }
 
