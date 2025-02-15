@@ -42,8 +42,8 @@ class LikeServiceTest {
 
     @BeforeEach
     void setUp() {
-        String title = "Test Track";
-        String description = "This is a test track.";
+        String title = "테스트 트랙 제목";
+        String description = "테스트 트랙 설명";
         String musicPath = "/music/test.mp3";
         String coverPath = "/covers/test.jpg";
         int duration = 300; // 5분

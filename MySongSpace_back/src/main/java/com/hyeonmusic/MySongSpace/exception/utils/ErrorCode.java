@@ -32,14 +32,14 @@ public enum ErrorCode {
     ROOT_COMMENT_NOT_FOUND(NOT_FOUND, "최상위 댓글을 찾을 수 없습니다."),
     COMMENT_NOT_FOUND(NOT_FOUND, "댓글을 찾을 수 없습니다."),
     //like
-    SELF_LIKE_NOT_ALLOWED(BAD_REQUEST,"본인 트랙에는 좋아요를 달 수 없습니다."),
+    SELF_LIKE_NOT_ALLOWED(BAD_REQUEST, "본인 트랙에는 좋아요를 달 수 없습니다."),
     // global
     RESOURCE_LOCKED(LOCKED, "자원이 잠겨있어 접근할 수 없습니다."),
     NO_ACCESS(FORBIDDEN, "접근 권한이 없습니다."),
     RESOURCE_NOT_FOUND(NOT_FOUND, "요청한 자원(파일)을 찾을 수 없습니다."),
     INVALID_REQUEST(BAD_REQUEST, "올바르지 않은 요청입니다."),
     INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "예상치못한 에러가 발생했습니다."),
-
+    S3_SERVICE_ERROR(INTERNAL_SERVER_ERROR,"AWS S3에 파일 업로드 중 오류가 발생했습니다."),
     // like
     ALREADY_LIKED(CONFLICT, "이미 좋아요를 눌렀습니다."),
     LIKE_NOT_FOUND(NOT_FOUND, "좋아요를 찾을 수 없습니다.");
