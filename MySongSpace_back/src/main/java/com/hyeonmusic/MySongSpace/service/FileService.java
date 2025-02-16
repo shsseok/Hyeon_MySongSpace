@@ -115,7 +115,7 @@ public class FileService {
     }
 
     // S3 업로드 수행
-    private String uploadToS3(MultipartFile file, String fullFilePath, ObjectMetadata metadata) throws IOException {
+    public String uploadToS3(MultipartFile file, String fullFilePath, ObjectMetadata metadata) throws IOException {
         amazonS3.putObject(bucketName, fullFilePath, file.getInputStream(), metadata);
         return amazonS3.getUrl(bucketName, fullFilePath).getPath().toString();
     }
