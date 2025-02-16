@@ -60,7 +60,7 @@ public class FileService {
         }
     }
 
-    //파일 정규화 작업(삭제시 S3에서 / 작업을 처리해줘야함)
+    //파일 정규화 작업(삭제시 S3에서는 파일 경로 앞 / 제거와 동시에 디코딩 작업 진행)
     public String normalizeFilePath(String filePath) {
         if (filePath == null || filePath.isEmpty()) {
             return filePath;
@@ -72,7 +72,7 @@ public class FileService {
     }
 
     // 폴더 경로 결정
-    private String getFolderPath(String fileType) {
+    public String getFolderPath(String fileType) {
         switch (fileType) {
             case "music":
                 return "music/";
@@ -84,7 +84,7 @@ public class FileService {
     }
 
     // 삭제 후속처리 로직
-    private void deleteIfFileUploaded(String musicPath, String coverPath) {
+    public void deleteIfFileUploaded(String musicPath, String coverPath) {
         if (musicPath != null) {
             deleteFile(musicPath);
         }
@@ -93,11 +93,11 @@ public class FileService {
         }
     }
 
-    private String generateUniqueFileName(String originalFilename) {
+    public String generateUniqueFileName(String originalFilename) {
         return UUID.randomUUID() + "_" + originalFilename;
     }
 
-    private ObjectMetadata createMetadata(MultipartFile file) {
+    public ObjectMetadata createMetadata(MultipartFile file) {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
