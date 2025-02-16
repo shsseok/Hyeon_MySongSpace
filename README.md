@@ -1,4 +1,4 @@
-# MySongSpace
+# MySongSpace  
 
 MySongSpace는 사용자가 자신만의 음악이나 사운드를 업로드하고, 
 특정 감정(mood)과 장르(genre)를 태그로 설정하여 다른 사용자와 공유할 수 있는 음악 플랫폼입니다. 
