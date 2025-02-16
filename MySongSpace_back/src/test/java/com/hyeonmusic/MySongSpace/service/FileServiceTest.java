@@ -32,12 +32,9 @@ public class FileServiceTest {
     @InjectMocks
     private FileService fileService;
 
-    @Mock
-    private AmazonS3 amazonS3;
-
 
     @Test
-    @DisplayName("파일이 정상적으로 업로드 되어 파일 경로를 반환")
+    @DisplayName("음악파일과 이미지파일 모두 정상적으로 업로드 되면 파일 경로를 반환")
     void testUploadTrackFileAndTrackCoverFile_success() throws Exception {
         // given
         MockMultipartFile trackMusicFile = new MockMultipartFile("track.mp3", "테스트음악파일.mp3", "audio/mp3", "test-music-file".getBytes());
@@ -55,14 +52,5 @@ public class FileServiceTest {
         assertEquals(expectedCoverPath, result.getCoverPath());
     }
 
-    @Test
-     void  () throws Exception {
-        //given
 
-
-        //when
-
-
-        //then
-    }
 }
