@@ -7,7 +7,6 @@ import com.hyeonmusic.MySongSpace.entity.FilePath;
 import com.hyeonmusic.MySongSpace.exception.FileDeleteException;
 import com.hyeonmusic.MySongSpace.exception.FileNotFoundException;
 import com.hyeonmusic.MySongSpace.exception.FileUploadException;
-import com.hyeonmusic.MySongSpace.exception.S3UploadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,11 +48,12 @@ public class FileService {
     }
 
     public void deleteFile(String filePath) {
+        String decodedFilePath = normalizeFilePath(filePath);
+        if (!s3Service.doesFileExist(decodedFilePath)) {
+            throw new FileNotFoundException(FILE_NOT_FOUND);
+        }
+        //예외 처리 하는 부분을 S3Service에 책임을 넘기는 것이 옳다고 판단 테스트 로직 추후 작성
         try {
-            String decodedFilePath = normalizeFilePath(filePath);
-            if (!s3Service.doesFileExist(decodedFilePath)) {
-                throw new FileNotFoundException(FILE_NOT_FOUND);
-            }
             s3Service.deleteFileToS3(filePath);
         } catch (Exception e) {
             throw new FileDeleteException(FILE_DELETE_FAILED, e.getMessage());

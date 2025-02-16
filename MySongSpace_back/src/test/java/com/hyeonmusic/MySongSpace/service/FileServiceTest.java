@@ -3,10 +3,9 @@ package com.hyeonmusic.MySongSpace.service;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.amazonaws.services.s3.AmazonS3;
 import com.hyeonmusic.MySongSpace.common.utils.FileType;
 import com.hyeonmusic.MySongSpace.entity.FilePath;
-import org.junit.jupiter.api.BeforeEach;
+import com.hyeonmusic.MySongSpace.exception.FileNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,15 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
-//(1) 성공 케이스
-//uploadTrackFileAndTrackCoverFile() 실행 시 정상적으로 업로드되어 파일 경로 반환 확인
-//uploadFile() 실행 후 반환된 S3 URL이 예상 경로와 일치하는지 검증
-//deleteFile() 실행 후 S3에서 해당 파일이 삭제되었는지 확인
-//
-//(2) 실패 케이스
-//S3 업로드 중 예외 발생 시 FileUploadException이 발생하는지 확인
-//S3에 존재하지 않는 파일을 삭제할 때 FileNotFoundException이 발생하는지 확인
-//S3 서비스 자체 오류 발생 시 S3UploadException 처리 검증
 
 @ExtendWith(MockitoExtension.class)
 public class FileServiceTest {
@@ -32,6 +22,8 @@ public class FileServiceTest {
     @InjectMocks
     private FileService fileService;
 
+    @Mock
+    private S3Service s3Service;
 
     @Test
     @DisplayName("음악파일과 이미지파일 모두 정상적으로 업로드 되면 파일 경로를 반환")
@@ -52,5 +44,27 @@ public class FileServiceTest {
         assertEquals(expectedCoverPath, result.getCoverPath());
     }
 
+    @Test
+    @DisplayName("파일 삭제시 S3에 파일이 없으면 예외 던짐")
+    void isExistFileThrowsException() {
+        //given
+        String filePath = "covers/TestFilePath.jpg";
+        //when
+        when(s3Service.doesFileExist(filePath)).thenReturn(false);
+        //then
+        assertThrows(FileNotFoundException.class, () -> fileService.deleteFile(filePath));
+    }
 
+    @Test
+    @DisplayName("파일 경로 정규화 작업이 정상적으로 진행 되는가")
+    void isSuccessFileNormalizeFilePath() {
+        //given
+        String filePath = "/covers/%EB%B0%B0%EA%B2%BD.jpg";
+        //when
+        String result = fileService.normalizeFilePath(filePath);
+        //then
+        String exceptedResult = "covers/배경.jpg";
+        assertEquals(result, exceptedResult);
+
+    }
 }
