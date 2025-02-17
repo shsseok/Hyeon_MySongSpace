@@ -19,6 +19,7 @@ public enum ErrorCode {
     FILE_UPLOAD_FAILED(INTERNAL_SERVER_ERROR, "업로드 중 문제가 발생했습니다."),
     FILE_NOT_FOUND(NOT_FOUND, "파일을 찾을 수 없습니다."),
     FILE_TOO_LARGE(BAD_REQUEST, "파일 크기가 너무 큽니다. 음악 파일은 약 4분이내의 파일만 가능합니다."),
+    FILE_TYPE_UNSUPPORTED(BAD_REQUEST, "지원하지 않는 파일 형식입니다."),
     // member
     MEMBER_NOT_FOUND(NOT_FOUND, "회원을 찾을 수 없습니다."),
     // track
@@ -39,7 +40,7 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(NOT_FOUND, "요청한 자원(파일)을 찾을 수 없습니다."),
     INVALID_REQUEST(BAD_REQUEST, "올바르지 않은 요청입니다."),
     INTERNAL_ERROR(INTERNAL_SERVER_ERROR, "예상치못한 에러가 발생했습니다."),
-    S3_SERVICE_ERROR(INTERNAL_SERVER_ERROR,"AWS S3에 파일 업로드 중 오류가 발생했습니다."),
+    S3_SERVICE_ERROR(INTERNAL_SERVER_ERROR, "AWS S3에 파일 업로드 중 오류가 발생했습니다."),
     // like
     ALREADY_LIKED(CONFLICT, "이미 좋아요를 눌렀습니다."),
     LIKE_NOT_FOUND(NOT_FOUND, "좋아요를 찾을 수 없습니다.");
