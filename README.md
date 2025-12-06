@@ -65,7 +65,7 @@ https://hyeonseokdelvelop.tistory.com/47
 ---
 ### 3. 좋아요 버튼의 숨겨진 딜레마 : 동시성 이슈
 
-[[https://hyeonseokdelvelop.tistory.com/47](https://hyeonseokdelvelop.tistory.com/46)](https://hyeonseokdelvelop.tistory.com/46)
+https://hyeonseokdelvelop.tistory.com/46
 
 ---
 
