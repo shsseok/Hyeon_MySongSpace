@@ -56,7 +56,7 @@ public class FileServiceTest {
     }
 
     @Test
-    @DisplayName("파일 경로 정규화 작업이 정상적으로 진행 되는가")
+    @DisplayName("파일 경로 정규화 작업이 정상적으로 진행 (경로 앞 / 제거 + 디코딩 작업)")
     void isSuccessFileNormalizeFilePath() {
         //given
         String filePath = "/covers/%EB%B0%B0%EA%B2%BD.jpg";
@@ -66,5 +66,47 @@ public class FileServiceTest {
         String exceptedResult = "covers/배경.jpg";
         assertEquals(result, exceptedResult);
 
+    }
+
+    @Test
+    @DisplayName("음악 파일과 커버 파일이 모두 존재할 때 deleteFile이 각각 호출되는지 확인")
+    void deleteIfFileUploaded_callsDeleteFileForBothPaths() {
+        // given
+        String musicPath = "music/test.mp3";
+        String coverPath = "covers/test.jpg";
+        // when
+        doNothing().when(fileService).deleteFile(anyString());
+        fileService.deleteIfFileUploaded(musicPath, coverPath);
+        // then
+        verify(fileService, times(1)).deleteFile(musicPath);
+        verify(fileService, times(1)).deleteFile(coverPath);
+    }
+
+    @Test
+    @DisplayName("음악 파일 경로만 존재할 때 deleteFile이 음악 파일에 대해서만 호출되는지 확인")
+    void deleteIfFileUploaded_callsDeleteFileForMusicOnly() {
+        // given
+        String musicPath = "music/test.mp3";
+        String coverPath = null;
+        // when
+        doNothing().when(fileService).deleteFile(anyString());
+        fileService.deleteIfFileUploaded(musicPath, coverPath);
+        // then
+        verify(fileService, times(1)).deleteFile(musicPath);
+        verify(fileService, never()).deleteFile(coverPath);
+    }
+
+    @Test
+    @DisplayName("커버 파일 경로만 존재할 때 deleteFile이 커버 파일에 대해서만 호출되는지 확인")
+    void deleteIfFileUploaded_callsDeleteFileForCoverOnly() {
+        // given
+        String musicPath = null;
+        String coverPath = "covers/test.jpg";
+        // when
+        doNothing().when(fileService).deleteFile(anyString());
+        fileService.deleteIfFileUploaded(musicPath, coverPath);
+        // then
+        verify(fileService, never()).deleteFile(musicPath);
+        verify(fileService, times(1)).deleteFile(coverPath);
     }
 }
