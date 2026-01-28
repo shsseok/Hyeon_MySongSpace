@@ -104,4 +104,16 @@ https://hyeonseokdelvelop.tistory.com/45
 
 ---
 
+### 8. Docker 도입하여 개발 환경을 셋팅해보자
+
+[https://hyeonseokdelvelop.tistory.com/45](https://hyeonseokdelvelop.tistory.com/61)
+
+---
+
+### 9. 로컬에서는 되는데 CI에서는 안 됐던 이유 CI/CD 구축 삽질기
+
+[https://hyeonseokdelvelop.tistory.com/45](https://hyeonseokdelvelop.tistory.com/60)
+
+---
+
 
